@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kevin & Dominic | Santuario Carmesí</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/style.css">
+</head>
+<body>
+
+  <!-- Capas de atmósfera gótica -->
+  <div class="damask-bg"></div>
+  <div class="crimson-mist"></div>
+  <canvas id="atmosphere-canvas"></canvas>
+  <div id="hearts-rain-container" class="hearts-rain-container"></div>
+  <div class="vignette"></div>
+  <div id="cursor-glow" class="cursor-glow"></div>
+
+  <!-- ================= PANTALLA DE LOGIN ================= -->
+  <section id="login-screen" class="login-wrapper">
+    <div class="cathedral-frame login-card">
+      <div class="rose-window-bg"></div>
+      <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+      <div class="crest-emblem">
+        <span>K</span><span class="crest-cross">†</span><span>D</span>
+      </div>
+      <h1 class="gothic-title">Santuario Eterno</h1>
+      <p class="subtitle">Solo dos almas poseen la llave de este umbral</p>
+
+      <div class="gothic-divider"><span>❖</span></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Elige tu nombre</label>
+          <div class="user-selector">
+            <input type="radio" name="username" id="user-kevin" value="Kevin" required>
+            <label for="user-kevin" class="user-card-btn">
+              <span class="soul-sigil">♚</span>
+              <span class="soul-name">Kevin</span>
+            </label>
+
+            <input type="radio" name="username" id="user-dominic" value="Dominic" required>
+            <label for="user-dominic" class="user-card-btn">
+              <span class="soul-sigil">♛</span>
+              <span class="soul-name">Dominic</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password-input" class="form-label">Ingresa la fecha de nuestro comienzo</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="password-input" 
+              placeholder="• • • • • • • •" 
+              autocomplete="off" 
+              required
+            >
+          </div>
+        </div>
+
+        <p id="login-error" class="error-msg"></p>
+
+        <button type="submit" class="wax-seal-btn">
+          <span>Romper el Sello</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= APLICACIÓN PRINCIPAL ================= -->
+  <div id="main-app" class="hidden">
+    
+    <!-- Barra de Navegación Superior -->
+    <header class="navbar">
+      <div class="nav-left">
+        <div class="brand-monogram" onclick="switchTab('inicio')">
+          <span>K</span><small>†</small><span>D</span>
+        </div>
+        <div class="user-status">
+          <span class="pulse-dot"></span>
+          <span id="welcome-user"></span>
+        </div>
+      </div>
+
+      <button id="mobile-menu-btn" class="mobile-toggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="nav-links" class="nav-links">
+        <button class="nav-btn active" data-target="inicio">Inicio</button>
+
+        <!-- Desplegable 1: Memorias -->
+        <div class="nav-dropdown">
+          <button class="nav-btn dropdown-trigger">Memorias ▾</button>
+          <div class="dropdown-menu">
+            <button class="nav-btn" data-target="recuerdos">Recuerdos Especiales</button>
+            <button class="nav-btn" data-target="nunca-olvidar">Nunca Quiero Olvidar</button>
+            <button class="nav-btn" data-target="salidas">Nuestras Salidas</button>
+            <button class="nav-btn" data-target="logros">Nuestros Logros</button>
+            <button class="nav-btn" data-target="fotos">Galería de Fotos</button>
+            <button class="nav-btn" data-target="videos">Videos</button>
+          </div>
+        </div>
+
+        <!-- Desplegable 2: Devoción -->
+        <div class="nav-dropdown">
+          <button class="nav-btn dropdown-trigger">Devoción ▾</button>
+          <div class="dropdown-menu">
+            <button class="nav-btn" data-target="razones">Razones para Amarte</button>
+            <button class="nav-btn" data-target="admiro">Cosas que Admiro de Ti</button>
+            <button class="nav-btn" data-target="agradecimientos">Agradecimientos</button>
+            <button class="nav-btn" data-target="recuerdan">Me Recuerdan a Ti</button>
+            <button class="nav-btn" data-target="parejas">Parejas a las que nos Parecemos</button>
+            <button class="nav-btn" data-target="carta">Mi Carta</button>
+          </div>
+        </div>
+
+        <!-- Desplegable 3: Universo & Archivos -->
+        <div class="nav-dropdown">
+          <button class="nav-btn dropdown-trigger">Universo ▾</button>
+          <div class="dropdown-menu">
+            <button class="nav-btn" data-target="constelaciones">Mapa de Constelaciones</button>
+            <button class="nav-btn" data-target="tabla-periodica">Tabla Periódica del Amor</button>
+            <button class="nav-btn" data-target="expediente">Expediente Secreto</button>
+            <button class="nav-btn" data-target="celebraciones">Celebraciones Importantes</button>
+            <button class="nav-btn" data-target="planes">Planes a Futuro</button>
+            <button class="nav-btn" data-target="canciones">Nuestras Canciones</button>
+          </div>
+        </div>
+
+        <!-- Desplegable 4: Juegos -->
+        <div class="nav-dropdown">
+          <button class="nav-btn dropdown-trigger">Juegos ▾</button>
+          <div class="dropdown-menu">
+            <button class="nav-btn" data-target="sopa">Sopa de Letras</button>
+            <button class="nav-btn" data-target="buscaminas">Buscaminas Romántico</button>
+            <button class="nav-btn" data-target="laberinto">Laberinto del Amor</button>
+            <button class="nav-btn" data-target="quiz">Quiz del Amor (20)</button>
+          </div>
+        </div>
+
+        <button class="nav-btn" data-target="tiempo">Tiempo</button>
+        <button class="nav-btn" data-target="sorpresa">Sorpresa</button>
+        <button class="nav-btn emergency-nav-btn" onclick="triggerLoveEmergency()">♥ Emergencia</button>
+        <button id="logout-btn" class="nav-btn logout">Cerrar</button>
+      </nav>
+    </header>
+
+    <main class="container">
+
+      <!-- ================= 1. INICIO ================= -->
+      <section id="inicio" class="tab-section active">
+        <div class="cathedral-frame hero-banner">
+          <div class="rose-window-bg"></div>
+          <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+          <div class="hero-crown">† ✦ ♛ ✦ †</div>
+          <h2 class="hero-quote">"Acá guardo con amor nuestros recuerdos"</h2>
+          <p class="hero-sub">Un altar digital esculpido en sombras y carmesí para inmortalizar cada instante entre Kevin y Dominic.</p>
+
+          <!-- Botón de Mensajes Amorosos de Emergencia -->
+          <div class="emergency-hero-wrap">
+            <button class="btn-emergency-main" onclick="triggerLoveEmergency()">
+              <span class="heart-beat">♥</span> Mensajes Amorosos de Emergencia <span class="heart-beat">♥</span>
+            </button>
+          </div>
+
+          <div class="gothic-divider"><span>❖</span></div>
+
+          <!-- Portal completo con TODOS los apartados -->
+          <div class="sanctuary-grid">
+            <article class="portal-card" onclick="switchTab('constelaciones')">
+              <div class="portal-arch">✧</div>
+              <div class="portal-content">
+                <h3>Mapa de Constelaciones</h3>
+                <p>El firmamento trazando nuestro avance desde el 27 de enero.</p>
+                <span class="portal-cta">Contemplar estrellas ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('tabla-periodica')">
+              <div class="portal-arch">⚗</div>
+              <div class="portal-content">
+                <h3>Tabla Periódica del Amor</h3>
+                <p>Los elementos químicos que componen nuestra alma.</p>
+                <span class="portal-cta">Explorar elementos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('expediente')">
+              <div class="portal-arch">📁</div>
+              <div class="portal-content">
+                <h3>Expediente Secreto</h3>
+                <p>Archivo confidencial: por qué somos la mejor pareja.</p>
+                <span class="portal-cta">Abrir carpeta ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('celebraciones')">
+              <div class="portal-arch">🕯</div>
+              <div class="portal-content">
+                <h3>Celebraciones Importantes</h3>
+                <p>Aniversario, cumpleaños, flores amarillas, Halloween y Navidad.</p>
+                <span class="portal-cta">Ver calendario ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('recuerdos')">
+              <div class="portal-arch">📜</div>
+              <div class="portal-content">
+                <h3>Recuerdos Especiales</h3>
+                <p>Crónicas desplegables de nuestros momentos más sagrados.</p>
+                <span class="portal-cta">Abrir pergaminos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('nunca-olvidar')">
+              <div class="portal-arch">⏳</div>
+              <div class="portal-content">
+                <h3>Nunca Quiero Olvidar</h3>
+                <p>Memorias grabadas a fuego contra el paso del tiempo.</p>
+                <span class="portal-cta">Entrar al archivo ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('logros')">
+              <div class="portal-arch">🏆</div>
+              <div class="portal-content">
+                <h3>Nuestros Logros Juntos</h3>
+                <p>Cada obstáculo vencido y cada victoria compartida.</p>
+                <span class="portal-cta">Ver trofeos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('admiro')">
+              <div class="portal-arch">♛</div>
+              <div class="portal-content">
+                <h3>Cosas que Admiro de Ti</h3>
+                <p>Tu fuerza, tu mente, tu esencia y todo lo que eres.</p>
+                <span class="portal-cta">Leer tributo ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('agradecimientos')">
+              <div class="portal-arch">✞</div>
+              <div class="portal-content">
+                <h3>Agradecimientos</h3>
+                <p>Gracias por todo lo que haces por mí cada día.</p>
+                <span class="portal-cta">Ver gratitud ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('parejas')">
+              <div class="portal-arch">❧</div>
+              <div class="portal-content">
+                <h3>Parejas a las que nos Parecemos</h3>
+                <p>Dúos icónicos que reflejan nuestra complicidad.</p>
+                <span class="portal-cta">Descubrir dúos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('salidas')">
+              <div class="portal-arch">✦</div>
+              <div class="portal-content">
+                <h3>Nuestras Salidas</h3>
+                <p>Lugares, citas y noches donde el mundo se detuvo.</p>
+                <span class="portal-cta">Explorar bitácora ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('planes')">
+              <div class="portal-arch">🗝</div>
+              <div class="portal-content">
+                <h3>Planes a Futuro</h3>
+                <p>Promesas, sueños y destinos que conquistaremos juntos.</p>
+                <span class="portal-cta">Ver juramentos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('razones')">
+              <div class="portal-arch">♥</div>
+              <div class="portal-content">
+                <h3>Razones por las que te Amo</h3>
+                <p>Cada motivo por el cual mi alma te elige cada día.</p>
+                <span class="portal-cta">Descubrir razones ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('recuerdan')">
+              <div class="portal-arch">🥀</div>
+              <div class="portal-content">
+                <h3>Me Recuerdan a Ti</h3>
+                <p>Detalles, aromas, canciones y señales que llevan tu nombre.</p>
+                <span class="portal-cta">Ver gabinete ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('buscaminas')">
+              <div class="portal-arch">💣</div>
+              <div class="portal-content">
+                <h3>Buscaminas Romántico</h3>
+                <p>Si detonas una bomba, deberás cumplir un reto de amor.</p>
+                <span class="portal-cta">Jugar buscaminas ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('laberinto')">
+              <div class="portal-arch">❖</div>
+              <div class="portal-content">
+                <h3>Laberinto del Amor</h3>
+                <p>Guía a Kevin hasta Dominic a través de los muros oscuros.</p>
+                <span class="portal-cta">Cruzar laberinto ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('sopa')">
+              <div class="portal-arch">🔍</div>
+              <div class="portal-content">
+                <h3>Sopa de Letras</h3>
+                <p>Encuentra nuestras fechas y palabras ocultas en el tablero.</p>
+                <span class="portal-cta">Jugar ahora ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('quiz')">
+              <div class="portal-arch">?</div>
+              <div class="portal-content">
+                <h3>Quiz de Nuestra Historia</h3>
+                <p>20 preguntas para poner a prueba cuánto nos conocemos.</p>
+                <span class="portal-cta">Iniciar desafío ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('fotos')">
+              <div class="portal-arch">🖼</div>
+              <div class="portal-content">
+                <h3>Nuestras Fotos</h3>
+                <p>Retratos y momentos detenidos en la eternidad.</p>
+                <span class="portal-cta">Entrar a la galería ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('videos')">
+              <div class="portal-arch">▶</div>
+              <div class="portal-content">
+                <h3>Nuestros Videos</h3>
+                <p>Memorias vivas y escenas que jamás se borrarán.</p>
+                <span class="portal-cta">Reproducir recuerdos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('canciones')">
+              <div class="portal-arch">♫</div>
+              <div class="portal-content">
+                <h3>Nuestras Canciones</h3>
+                <p>Las melodías de Spotify que narran nuestra historia.</p>
+                <span class="portal-cta">Escuchar himnos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('tiempo')">
+              <div class="portal-arch">⧗</div>
+              <div class="portal-content">
+                <h3>Nuestro Tiempo</h3>
+                <p>Reloj perpetuo desde el 27 de enero de 2026.</p>
+                <span class="portal-cta">Contemplar latidos ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card" onclick="switchTab('carta')">
+              <div class="portal-arch">✒</div>
+              <div class="portal-content">
+                <h3>Mi Carta</h3>
+                <p>Confesiones escritas con tinta y devoción.</p>
+                <span class="portal-cta">Abrir pergamino ⟶</span>
+              </div>
+            </article>
+
+            <article class="portal-card royal-card" onclick="switchTab('sorpresa')">
+              <div class="portal-arch">♛</div>
+              <div class="portal-content">
+                <h3>Otra Sorpresa</h3>
+                <p>Un relicario secreto aguardando al final del camino.</p>
+                <span class="portal-cta">Revelar secreto ⟶</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TABLA PERIÓDICA DEL AMOR ================= -->
+      <section id="tabla-periodica" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">⚗ ✦ ⚗</span>
+          <h2 class="gothic-title">Tabla Periódica de Nuestro Amor</h2>
+          <p class="subtitle">Haz clic en cualquier elemento para revelar su composición emocional</p>
+        </div>
+
+        <div class="cathedral-frame">
+          <div id="periodic-detail-banner" class="periodic-banner">
+            <span id="pt-selected-symbol" class="pt-big-symbol">Kd</span>
+            <div class="pt-banner-info">
+              <h3 id="pt-selected-name">Kevin & Dominic (Elemento Primordial)</h3>
+              <p id="pt-selected-desc">El enlace atómico más estable y poderoso del universo, formado el 27 de enero de 2026.</p>
+            </div>
+          </div>
+
+          <div id="periodic-grid" class="periodic-grid"></div>
+        </div>
+      </section>
+
+      <!-- ================= EXPEDIENTE SECRETO (ESTILO DETECTIVE) ================= -->
+      <section id="expediente" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">📁 ✦ 📁</span>
+          <h2 class="gothic-title">Expediente Confidencial: Caso K†D</h2>
+          <p class="subtitle">Archivo clasificado de inteligencia romántica — Nivel de acceso: Máximo</p>
+        </div>
+
+        <div class="cathedral-frame dossier-folder">
+          <div class="dossier-top-meta">
+            <div>
+              <p class="dossier-code">CASO N.º: 27-01-2026-ETERNAL</p>
+              <p class="dossier-code">SUJETOS: KEVIN & DOMINIC</p>
+              <p class="dossier-code">VEREDICTO: LA MEJOR PAREJA DOCUMENTADA</p>
+            </div>
+            <div class="classified-stamp">TOP SECRET // CONFIDENCIAL</div>
+          </div>
+
+          <div class="gothic-divider"><span>❖</span></div>
+
+          <div class="form-panel compact-panel">
+            <form id="form-evidencia" class="inline-add-form">
+              <input type="text" id="evidencia-texto" placeholder="Añadir nueva prueba o motivo al expediente..." required>
+              <button type="submit" class="btn-crimson">Archivar Prueba</button>
+            </form>
+          </div>
+
+          <div id="dossier-evidence-list" class="dossier-grid"></div>
+        </div>
+      </section>
+
+      <!-- ================= MAPA DE CONSTELACIONES ================= -->
+      <section id="constelaciones" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">✧ ✦ ✧</span>
+          <h2 class="gothic-title">Mapa de Nuestras Constelaciones</h2>
+          <p class="subtitle">El trazado celestial de cada mes y estrella encendida desde el 27 de enero de 2026 hasta hoy</p>
+        </div>
+
+        <div class="cathedral-frame constellation-box">
+          <div class="constellation-canvas-wrap">
+            <canvas id="constellation-canvas" width="900" height="440"></canvas>
+          </div>
+          <div id="constellation-info-card" class="constellation-readout">
+            <span class="date-tag" id="star-date">27 de Enero, 2026</span>
+            <h3 class="card-title" id="star-title">Estrella Alfa: El Origen</h3>
+            <p class="card-desc" id="star-desc">Haz clic sobre cualquier estrella brillante en el mapa celeste para leer la historia de ese hito en nuestra constelación.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= COSAS QUE ADMIRO DE TI ================= -->
+      <section id="admiro" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">♛ ✦ ♛</span>
+          <h2 class="gothic-title">Cosas que Admiro de Ti</h2>
+          <p class="subtitle">Virtudes, fortalezas y rasgos de tu alma que me inspiran cada día</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-admiro" class="gothic-form-grid">
+            <input type="text" id="admiro-titulo" placeholder="Cualidad o virtud que admiro..." required>
+            <input type="text" id="admiro-detalle" placeholder="¿Por qué me inspira tanto?" required>
+            <button type="submit" class="btn-crimson">Añadir a tu Altar</button>
+          </form>
+        </div>
+
+        <div id="admiro-grid" class="reasons-grid"></div>
+      </section>
+
+      <!-- ================= AGRADECIMIENTOS ================= -->
+      <section id="agradecimientos" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">✞ ✦ ✞</span>
+          <h2 class="gothic-title">Agradecimientos Eternos</h2>
+          <p class="subtitle">Por cada gesto, sacrificio, paciencia y detalle que haces por mí</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-gracias" class="inline-add-form">
+            <input type="text" id="gracias-texto" placeholder="Escribe algo que quieras agradecerle hoy..." required>
+            <button type="submit" class="btn-crimson">Guardar Gratitud</button>
+          </form>
+        </div>
+
+        <div id="gracias-grid" class="curiosities-grid"></div>
+      </section>
+
+      <!-- ================= PAREJAS A LAS QUE NOS PARECEMOS ================= -->
+      <section id="parejas" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">❧ ✦ ❧</span>
+          <h2 class="gothic-title">Parejas a las que nos Parecemos</h2>
+          <p class="subtitle">Dúos legendarios cuya química, lealtad y complicidad reflejan lo nuestro</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-pareja" class="gothic-form-grid">
+            <input type="text" id="pareja-nombres" placeholder="Nombres de la pareja (ej. Morticia & Gómez Addams)" required>
+            <input type="text" id="pareja-origen" placeholder="Serie, película, juego o historia..." required>
+            <textarea id="pareja-motivo" rows="2" placeholder="¿En qué nos parecemos a ellos?" required></textarea>
+            <button type="submit" class="btn-crimson">Registrar Dúo</button>
+          </form>
+        </div>
+
+        <div id="parejas-grid" class="timeline-grid"></div>
+      </section>
+
+      <!-- ================= CELEBRACIONES IMPORTANTES ================= -->
+      <section id="celebraciones" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">🕯 ✦ 🕯</span>
+          <h2 class="gothic-title">Celebraciones Importantes</h2>
+          <p class="subtitle">Nuestras fechas sagradas del año y la cuenta regresiva hacia cada una</p>
+        </div>
+
+        <div id="celebraciones-grid" class="celebrations-grid"></div>
+      </section>
+
+      <!-- ================= COSAS QUE NUNCA QUIERO OLVIDAR ================= -->
+      <section id="nunca-olvidar" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">⏳ ✦ ⏳</span>
+          <h2 class="gothic-title">Cosas que Nunca Quiero Olvidar</h2>
+          <p class="subtitle">Instantes, frases, miradas y promesas protegidas contra el olvido</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-nunca" class="inline-add-form">
+            <input type="text" id="nunca-texto" placeholder="Escribe un detalle o momento que jamás quieras olvidar..." required>
+            <button type="submit" class="btn-crimson">Grabar en Piedra</button>
+          </form>
+        </div>
+
+        <div id="nunca-grid" class="reasons-grid"></div>
+      </section>
+
+      <!-- ================= NUESTROS LOGROS JUNTOS ================= -->
+      <section id="logros" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">🏆 ✦ 🏆</span>
+          <h2 class="gothic-title">Nuestros Logros Juntos</h2>
+          <p class="subtitle">Trofeos desbloqueados en nuestra historia de amor</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-logro" class="gothic-form-grid">
+            <input type="text" id="logro-titulo" placeholder="Título del logro desbloqueado..." required>
+            <input type="text" id="logro-fecha" placeholder="Fecha o etapa..." required>
+            <textarea id="logro-desc" rows="2" placeholder="Descripción de este logro juntos..." required></textarea>
+            <button type="submit" class="btn-crimson">Desbloquear Logro</button>
+          </form>
+        </div>
+
+        <div id="logros-grid" class="timeline-grid"></div>
+      </section>
+
+      <!-- ================= RECUERDOS DE MOMENTOS ESPECIALES (DESPLEGABLES) ================= -->
+      <section id="recuerdos" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">📜 ✦ 📜</span>
+          <h2 class="gothic-title">Recuerdos de Momentos Especiales</h2>
+          <p class="subtitle">Haz clic en cada título para desplegar su historia o guarda nuevos recuerdos eternos</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <h3 class="panel-heading">Añadir Nuevo Recuerdo</h3>
+          <form id="form-recuerdo" class="gothic-form-grid">
+            <input type="text" id="recuerdo-titulo" placeholder="Título del momento especial..." required>
+            <input type="text" id="recuerdo-fecha" placeholder="Fecha (ej. 27 de Enero, 2026)" required>
+            <textarea id="recuerdo-texto" rows="3" placeholder="Escribe aquí toda la historia, lo que sentimos y lo que pasó..." required></textarea>
+            <button type="submit" class="btn-crimson">Sellar Recuerdo</button>
+          </form>
+        </div>
+
+        <div id="recuerdos-accordion" class="accordion-list"></div>
+      </section>
+
+      <!-- ================= NUESTRAS SALIDAS ================= -->
+      <section id="salidas" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">🕯 ✦ 🕯</span>
+          <h2 class="gothic-title">Nuestras Salidas</h2>
+          <p class="subtitle">Bitácora de nuestros encuentros, lugares recorridos y aventuras juntos</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <h3 class="panel-heading">Registrar Nueva Salida</h3>
+          <form id="form-salida" class="gothic-form-grid">
+            <input type="text" id="salida-lugar" placeholder="Lugar o título de la cita..." required>
+            <input type="text" id="salida-fecha" placeholder="Fecha (ej. 14 de Febrero, 2026)" required>
+            <textarea id="salida-desc" rows="2" placeholder="¿Qué hicimos? ¿Qué fue lo mejor de esa salida?" required></textarea>
+            <button type="submit" class="btn-crimson">Guardar Salida</button>
+          </form>
+        </div>
+
+        <div id="salidas-grid" class="timeline-grid"></div>
+      </section>
+
+      <!-- ================= NUESTROS PLANES A FUTURO ================= -->
+      <section id="planes" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">✦ ♛ ✦</span>
+          <h2 class="gothic-title">Nuestros Planes a Futuro</h2>
+          <p class="subtitle">Metas, viajes y sueños que cumpliremos de la mano (haz clic para marcar cumplidos)</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-plan" class="inline-add-form">
+            <input type="text" id="plan-texto" placeholder="Escribe un nuevo plan o sueño juntos..." required>
+            <button type="submit" class="btn-crimson">Añadir Plan</button>
+          </form>
+        </div>
+
+        <div id="planes-list" class="plans-grid"></div>
+      </section>
+
+      <!-- ================= RAZONES POR LAS QUE TE AMO ================= -->
+      <section id="razones" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">♥ ✦ ♥</span>
+          <h2 class="gothic-title">Razones por las que te Amo</h2>
+          <p class="subtitle">Aunque faltaría eternidad para enumerarlas todas, aquí viven las más profundas</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-razon" class="inline-add-form">
+            <input type="text" id="razon-texto" placeholder="Añade una nueva razón por la que lo/la amas..." required>
+            <button type="submit" class="btn-crimson">Inmortalizar Razón</button>
+          </form>
+        </div>
+
+        <div id="razones-grid" class="reasons-grid"></div>
+      </section>
+
+      <!-- ================= COSAS QUE ME RECUERDAN A TI ================= -->
+      <section id="recuerdan" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">🥀 ✦ 🥀</span>
+          <h2 class="gothic-title">Cosas que me Recuerdan a Ti</h2>
+          <p class="subtitle">Pequeños fragmentos del mundo que inevitablemente llevan tu esencia</p>
+        </div>
+
+        <div class="cathedral-frame form-panel">
+          <form id="form-recuerda" class="gothic-form-grid">
+            <input type="text" id="recuerda-cosa" placeholder="¿Qué objeto, canción, olor, color o momento es?" required>
+            <input type="text" id="recuerda-categoria" placeholder="Categoría (ej. Música, Aroma, Lugar, Detalle)" required>
+            <textarea id="recuerda-motivo" rows="2" placeholder="¿Por qué me recuerda a ti?" required></textarea>
+            <button type="submit" class="btn-crimson">Guardar en el Relicario</button>
+          </form>
+        </div>
+
+        <div id="recuerdan-grid" class="curiosities-grid"></div>
+      </section>
+
+      <!-- ================= JUEGO: BUSCAMINAS ROMÁNTICO ================= -->
+      <section id="buscaminas" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">💣 ✦ ♥</span>
+          <h2 class="gothic-title">Buscaminas Romántico</h2>
+          <p class="subtitle">Despeja las casillas seguras. Si detonas una bomba de amor, tendrás que cumplir un reto</p>
+        </div>
+
+        <div class="cathedral-frame minesweeper-box">
+          <div class="ms-controls">
+            <span class="quiz-badge">Bombas ocultas: 10</span>
+            <button type="button" class="btn-crimson" onclick="initMinesweeper()">Nuevo Tablero</button>
+          </div>
+          <div id="minesweeper-grid" class="minesweeper-grid"></div>
+        </div>
+      </section>
+
+      <!-- ================= JUEGO: LABERINTO DEL AMOR ================= -->
+      <section id="laberinto" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">❖ ✦ ♥</span>
+          <h2 class="gothic-title">Laberinto del Amor</h2>
+          <p class="subtitle">Usa las flechas del teclado (o los botones táctiles) para guiar a Kevin (♚) hasta Dominic (♛)</p>
+        </div>
+
+        <div class="cathedral-frame maze-box">
+          <canvas id="maze-canvas" width="450" height="450"></canvas>
+          <div class="maze-controls">
+            <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0, -1)">▲</button>
+            <div class="maze-mid-row">
+              <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(-1, 0)">◀</button>
+              <button type="button" class="maze-dir-btn" onclick="initMaze()">↻</button>
+              <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(1, 0)">▶</button>
+            </div>
+            <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0, 1)">▼</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= JUEGO: SOPA DE LETRAS ================= -->
+      <section id="sopa" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">❖ ✦ ❖</span>
+          <h2 class="gothic-title">Sopa de Letras Carmesí</h2>
+          <p class="subtitle">Arrastra o haz clic en las letras para encontrar nuestras palabras y fechas secretas</p>
+        </div>
+
+        <div class="cathedral-frame game-container">
+          <div class="wordsearch-layout">
+            <div id="wordsearch-grid" class="wordsearch-grid"></div>
+            <div class="wordsearch-sidebar">
+              <h3 class="panel-heading">Palabras Ocultas</h3>
+              <ul id="wordsearch-list" class="word-list"></ul>
+              <p id="wordsearch-status" class="game-status-msg"></p>
+              <button type="button" class="btn-crimson" onclick="initWordSearch()">Reiniciar Tablero</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= JUEGO: QUIZ DE 20 PREGUNTAS ================= -->
+      <section id="quiz" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">♛ ✦ ♛</span>
+          <h2 class="gothic-title">Oráculo de Nuestro Amor</h2>
+          <p class="subtitle">20 preguntas sobre nosotros. Al final descubrirás cuántas acertaste y cuántas fallaste</p>
+        </div>
+
+        <div class="cathedral-frame quiz-container">
+          <div id="quiz-active-view">
+            <div class="quiz-top-bar">
+              <span id="quiz-progress-text" class="quiz-badge">Pregunta 1 de 20</span>
+              <div class="quiz-progress-bar">
+                <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+              </div>
+            </div>
+
+            <h3 id="quiz-question-text" class="quiz-question"></h3>
+            <div id="quiz-options" class="quiz-options-grid"></div>
+          </div>
+
+          <div id="quiz-result-view" class="hidden quiz-result-box">
+            <div class="relic-icon">♛</div>
+            <h3 class="gothic-title">Veredicto del Santuario</h3>
+            <p id="quiz-final-message" class="subtitle"></p>
+
+            <div class="score-counters">
+              <div class="score-card correct-card">
+                <span id="score-correct" class="score-num">0</span>
+                <span class="score-label">Respuestas Correctas</span>
+              </div>
+              <div class="score-card incorrect-card">
+                <span id="score-incorrect" class="score-num">0</span>
+                <span class="score-label">Respuestas Incorrectas</span>
+              </div>
+            </div>
+
+            <button type="button" class="btn-crimson" onclick="restartQuiz()">Volver a Intentar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FOTOS ================= -->
+      <section id="fotos" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">❖ ✦ ❖</span>
+          <h2 class="gothic-title">Galería de Retratos</h2>
+          <p class="subtitle">Haz clic en la fecha para editarla o en la foto para ampliarla</p>
+        </div>
+
+        <div class="gallery-grid" id="photo-gallery">
+          <div class="cathedral-frame media-card">
+            <div class="card-top-bar">
+              <span class="date-tag" contenteditable="true">27 de Enero, 2026</span>
+            </div>
+            <div class="arch-frame" onclick="openLightbox(this)">
+              <img src="" alt="Nuestro Comienzo">
+              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
+            </div>
+            <h3 class="card-title" contenteditable="true">Nuestro Comienzo</h3>
+            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
+          </div>
+
+          <div class="cathedral-frame media-card">
+            <div class="card-top-bar">
+              <span class="date-tag" contenteditable="true">Fecha editable</span>
+            </div>
+            <div class="arch-frame" onclick="openLightbox(this)">
+              <img src="" alt="Recuerdo 2">
+              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
+            </div>
+            <h3 class="card-title" contenteditable="true">Título del Recuerdo</h3>
+            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
+          </div>
+
+          <div class="cathedral-frame media-card">
+            <div class="card-top-bar">
+              <span class="date-tag" contenteditable="true">Fecha editable</span>
+            </div>
+            <div class="arch-frame" onclick="openLightbox(this)">
+              <img src="" alt="Recuerdo 3">
+              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
+            </div>
+            <h3 class="card-title" contenteditable="true">Título del Recuerdo</h3>
+            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIDEOS ================= -->
+      <section id="videos" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">▶ ✦ ▶</span>
+          <h2 class="gothic-title">Archivo en Movimiento</h2>
+          <p class="subtitle">Escenas inmortalizadas para nuestra eternidad</p>
+        </div>
+
+        <div class="video-grid">
+          <div class="cathedral-frame media-card">
+            <div class="card-top-bar">
+              <span class="date-tag" contenteditable="true">Fecha editable</span>
+            </div>
+            <div class="video-frame">
+              <video controls src=""></video>
+            </div>
+            <h3 class="card-title" contenteditable="true">Recuerdo en Video #1</h3>
+            <p class="card-desc" contenteditable="true">Descripción de esta escena.</p>
+          </div>
+
+          <div class="cathedral-frame media-card">
+            <div class="card-top-bar">
+              <span class="date-tag" contenteditable="true">Fecha editable</span>
+            </div>
+            <div class="video-frame">
+              <video controls src=""></video>
+            </div>
+            <h3 class="card-title" contenteditable="true">Recuerdo en Video #2</h3>
+            <p class="card-desc" contenteditable="true">Descripción de esta escena.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CANCIONES ================= -->
+      <section id="canciones" class="tab-section">
+        <div class="section-header">
+          <span class="header-sigil">♫ ✦ ♫</span>
+          <h2 class="gothic-title">Nuestras Canciones</h2>
+          <p class="subtitle">Vinilos eternos que resuenan en nuestra oscuridad</p>
+        </div>
+
+        <div class="songs-grid">
+          <div class="cathedral-frame song-card">
+            <div class="vinyl-showcase">
+              <div class="album-cover">
+                <img src="" alt="Portada de la canción">
+              </div>
+              <div class="vinyl-disc">
+                <div class="vinyl-label">K†D</div>
+              </div>
+            </div>
+            <div class="song-details">
+              <h3 class="card-title">Título de la Canción #1</h3>
+              <p class="card-desc">Artista — Dedicatoria especial</p>
+              <a href="#" target="_blank" class="btn-crimson">
+                <span>♫ Abrir en Spotify</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="cathedral-frame song-card">
+            <div class="vinyl-showcase">
+              <div class="album-cover">
+                <img src="" alt="Portada de la canción">
+              </div>
+              <div class="vinyl-disc">
+                <div class="vinyl-label">K†D</div>
+              </div>
+            </div>
+            <div class="song-details">
+              <h3 class="card-title">Título de la Canción #2</h3>
+              <p class="card-desc">Artista — Dedicatoria especial</p>
+              <a href="#" target="_blank" class="btn-crimson">
+                <span>♫ Abrir en Spotify</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CONTADOR DE TIEMPO ================= -->
+      <section id="tiempo" class="tab-section">
+        <div class="cathedral-frame counter-box">
+          <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+          <span class="header-sigil">⧗ ✦ ⧗</span>
+          <h2 class="gothic-title">Reloj de Nuestra Eternidad</h2>
+          <p class="subtitle">Cada segundo transcurrido desde el 27 de enero de 2026</p>
+
+          <div class="timer-grid">
+            <div class="reliquary-block">
+              <span id="days" class="time-number">0</span>
+              <span class="time-label">Días</span>
+            </div>
+            <div class="reliquary-block">
+              <span id="hours" class="time-number">0</span>
+              <span class="time-label">Horas</span>
+            </div>
+            <div class="reliquary-block">
+              <span id="minutes" class="time-number">0</span>
+              <span class="time-label">Minutos</span>
+            </div>
+            <div class="reliquary-block">
+              <span id="seconds" class="time-number">0</span>
+              <span class="time-label">Segundos</span>
+            </div>
+          </div>
+
+          <div class="gothic-divider"><span>†</span></div>
+
+          <p class="total-hours-text">
+            Acumulando <strong id="total-hours" class="crimson-glow">0</strong> horas ininterrumpidas juntos.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= CARTA ================= -->
+      <section id="carta" class="tab-section">
+        <div class="cathedral-frame parchment-box">
+          <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+          <div class="letter-header">
+            <span class="header-sigil">✒</span>
+            <h2 class="gothic-title">Para Ti, Mi Alma</h2>
+          </div>
+          
+          <div id="letter-content" class="letter-body" contenteditable="true" spellcheck="false">Haz clic aquí para escribir tu carta...</div>
+
+          <div class="letter-footer">
+            <span id="save-status" class="save-indicator"></span>
+            <div class="wax-signature">
+              <span class="mini-seal">K†D</span>
+              <p class="signature">Por siempre tuyo.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SORPRESA ================= -->
+      <section id="sorpresa" class="tab-section">
+        <div class="cathedral-frame surprise-box">
+          <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+          <div class="relic-icon">♛</div>
+          <h2 class="gothic-title">El Último Relicario</h2>
+          <p class="subtitle">Un secreto guardado más allá de este santuario espera por ti...</p>
+          
+          <a href="#" target="_blank" class="btn-crimson surprise-btn">
+            <span>Haz click para ver otra sorpresa</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Botón Flotante Permanente de Mensajes Amorosos de Emergencia -->
+    <button class="floating-emergency-btn" onclick="triggerLoveEmergency()" title="Mensajes Amorosos de Emergencia">
+      ♥
+    </button>
+  </div>
+
+  <!-- MODAL GENÉRICO (EMERGENCIA DE AMOR / RETO DE BOMBA / GANASTE LABERINTO) -->
+  <div id="sacred-modal" class="emergency-modal hidden" onclick="closeSacredModal()">
+    <div class="cathedral-frame emergency-card" onclick="event.stopPropagation()">
+      <div id="modal-icon" class="relic-icon heart-pulse-big">♥</div>
+      <h2 id="modal-title" class="gothic-title">Emergencia de Amor</h2>
+      <p id="modal-body-text" class="emergency-quote"></p>
+      <div id="modal-actions" class="emergency-actions"></div>
+    </div>
+  </div>
+
+  <!-- MODAL LIGHTBOX PARA AMPLIAR FOTOS -->
+  <div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+      <img id="lightbox-img" src="" alt="Vista ampliada">
+    </div>
+  </div>
+
+  <script src="../JS/Javascript.js"></script>
+</body>
+</html>
