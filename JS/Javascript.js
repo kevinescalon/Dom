@@ -106,16 +106,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // Pausar todos los videos y Spotify al cambiar de pestaña
   function pauseAllMedia() {
     document.querySelectorAll("video").forEach((v) => { try { v.pause(); } catch(e){} });
-    document.querySelectorAll(".spotify-embed iframe").forEach((f) => { f.src = f.src; }); // Reload para parar
+    // Spotify: remover y volver a añadir src para forzar detención
+    document.querySelectorAll(".spotify-embed iframe").forEach((f) => {
+      const src = f.src;
+      f.src = "about:blank";
+      setTimeout(() => { f.src = src; }, 50);
+    });
   }
 
-  // Pausar al salir de la página
+  // Pausar al salir de la página o cambiar de pestaña del navegador
   document.addEventListener("visibilitychange", () => { if (document.hidden) pauseAllMedia(); });
+  window.addEventListener("blur", () => pauseAllMedia());
+  window.addEventListener("beforeunload", () => pauseAllMedia());
 
   let cameFromArcade = false;
 
+  // Rastrear TODOS los intervals para poder limpiarlos al salir de juegos
+  const allIntervals = new Set();
+  const allTimeouts = new Set();
+  const _origSetInterval = window.setInterval.bind(window);
+  const _origSetTimeout = window.setTimeout.bind(window);
+  window.setInterval = function(fn, delay, ...args) { const id = _origSetInterval(fn, delay, ...args); allIntervals.add(id); return id; };
+  window.setTimeout = function(fn, delay, ...args) { const id = _origSetTimeout(fn, delay, ...args); allTimeouts.add(id); return id; };
+  // Override clearInterval to remove from tracking
+  const _origClearInterval = window.clearInterval.bind(window);
+  window.clearInterval = function(id) { allIntervals.delete(id); _origClearInterval(id); };
+
+  function stopAllGames() {
+    // Limpiar TODOS los intervals y timeouts
+    allIntervals.forEach((id) => _origClearInterval(id));
+    allIntervals.clear();
+    allTimeouts.forEach((id) => clearTimeout(id));
+    allTimeouts.clear();
+    document.onkeydown = null;
+    // Recrear intervals persistentes necesarios
+    _origSetInterval(updateCounter, 1000);
+    _origSetInterval(checkChatUpdates, 3000);
+  }
+
   window.switchTab = function (targetId) {
     pauseAllMedia();
+    stopAllGames();
     const current = document.querySelector(".tab-section.active");
     if (current && current.id !== targetId) tabHistory.push(current.id);
     navButtons.forEach((b) => b.classList.toggle("active", b.dataset.target === targetId));
@@ -265,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================= CHAT =================
   function getChatMessages() { return JSON.parse(localStorage.getItem("kd_chat_messages") || "[]"); }
   function saveChatMessages(msgs) { localStorage.setItem("kd_chat_messages", JSON.stringify(msgs)); }
+  function getChatClearedTime() { return parseInt(localStorage.getItem(`kd_chat_cleared_${currentUser.toLowerCase()}`) || "0"); }
 
   function getChatAvatar(sender) {
     const profile = getProfile(sender);
@@ -276,13 +308,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("chat-messages");
     if (!container || !currentUser) return;
     const msgs = getChatMessages();
+    const clearedTime = getChatClearedTime();
+    // Filtrar mensajes posteriores al tiempo de vaciado del usuario actual
+    const visibleMsgs = msgs.filter(m => m.timestamp > clearedTime);
     container.innerHTML = "";
-    if (!msgs.length) {
-      container.innerHTML = `<div class="chat-empty"><span class="empty-glyph">✉</span>No hay mensajes aún. ¡Escribe el primero!</div>`;
+    if (!visibleMsgs.length) {
+      container.innerHTML = `<div class="chat-empty"><span class="empty-glyph">✉</span>No hay mensajes ${clearedTime ? "después de vaciar" : "aún"}. ¡Escribe el primero!</div>`;
       return;
     }
-    for (let i = 0; i < msgs.length; i++) {
-      const m = msgs[i];
+    for (let i = 0; i < visibleMsgs.length; i++) {
+      const m = visibleMsgs[i];
+      const realIdx = msgs.indexOf(m);
       const div = document.createElement("div");
       div.className = `chat-message from-${m.sender.toLowerCase()}`;
       const time = new Date(m.timestamp).toLocaleString("es-ES", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
@@ -297,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       const textHtml = m.text ? `<div class="chat-text">${esc(m.text).replace(/\n/g,"<br>")}</div>` : "";
-      const delBtn = currentMode === "editor" ? `<button class="evidence-delete" style="position:static;display:inline-flex;width:auto;height:auto;font-size:0.65rem;padding:0.2rem 0.5rem;margin-top:0.3rem;" onclick="deleteChatMsg(${i})">✕ Eliminar</button>` : "";
+      const delBtn = currentMode === "editor" ? `<button class="evidence-delete" style="position:static;display:inline-flex;width:auto;height:auto;font-size:0.65rem;padding:0.2rem 0.5rem;margin-top:0.3rem;" onclick="deleteChatMsg(${realIdx})">✕ Eliminar</button>` : "";
       div.innerHTML = `<div class="chat-avatar">${getChatAvatar(m.sender)}</div><div class="chat-bubble"><div class="chat-sender">${m.sender}</div>${textHtml}${mediaHtml}<div class="chat-time">${time}</div>${delBtn}</div>`;
       container.appendChild(div);
     }
@@ -305,8 +341,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.clearChat = function () {
-    if (!confirm("¿Vaciar todo el chat? Esta acción no se puede deshacer.")) return;
-    localStorage.removeItem("kd_chat_messages");
+    if (!confirm("¿Vaciar el chat para ti? Los mensajes se ocultarán solo para ti, no para la otra persona.")) return;
+    localStorage.setItem(`kd_chat_cleared_${currentUser.toLowerCase()}`, Date.now().toString());
     renderChat();
   };
 
@@ -316,6 +352,27 @@ document.addEventListener("DOMContentLoaded", () => {
     saveChatMessages(msgs);
     renderChat();
   };
+
+  // Auto-actualizar chat cuando cambian los datos (otra pestaña/dispositivo)
+  window.addEventListener("storage", (e) => {
+    if (e.key === "kd_chat_messages" || e.key === `kd_chat_cleared_${currentUser?.toLowerCase()}` || e.key?.startsWith("kd_profile_")) {
+      renderChat();
+    }
+  });
+
+  // Auto-actualizar chat solo cuando hay mensajes nuevos (no rompe audios reproduciéndose)
+  let lastChatCount = -1;
+  function checkChatUpdates() {
+    if (!currentUser || !document.getElementById("chat")?.classList.contains("active")) return;
+    const msgs = getChatMessages();
+    const clearedTime = getChatClearedTime();
+    const visibleCount = msgs.filter(m => m.timestamp > clearedTime).length;
+    if (visibleCount !== lastChatCount) {
+      lastChatCount = visibleCount;
+      renderChat();
+    }
+  }
+  setInterval(checkChatUpdates, 3000);
 
   document.getElementById("chat-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -924,8 +981,14 @@ document.addEventListener("DOMContentLoaded", () => {
     all.forEach((item) => {
       const tag = item.from==="view"?`De ${otherUser(currentUser)}`:`Tuya para ${otherUser(currentUser)}`;
       const card = document.createElement("div"); card.className = "plan-card" + (item.done?" completed":"");
-      card.innerHTML = `<div class="plan-check">✓</div><div style="flex:1"><span class="plan-text">${item.texto}</span><br><span class="editor-context-tag">${tag}</span></div>`;
-      if (item.from==="edit"&&currentMode==="editor") { card.style.cursor = "pointer"; card.addEventListener("click", () => { const d = JSON.parse(localStorage.getItem(editKey("planes"))||"[]"); d[item.idx].done = !d[item.idx].done; localStorage.setItem(editKey("planes"),JSON.stringify(d)); renderPlanes(); }); }
+      const delBtn = item.from==="edit"&&currentMode==="editor" ? `<button class="evidence-delete" style="position:static;flex-shrink:0;margin-left:0.5rem;" data-idx="${item.idx}">✕</button>` : "";
+      card.innerHTML = `<div class="plan-check">✓</div><div style="flex:1"><span class="plan-text">${item.texto}</span><br><span class="editor-context-tag">${tag}</span></div>${delBtn}`;
+      if (item.from==="edit"&&currentMode==="editor") {
+        card.style.cursor = "pointer";
+        card.querySelector(".plan-check").addEventListener("click", (e) => { e.stopPropagation(); const d = JSON.parse(localStorage.getItem(editKey("planes"))||"[]"); d[item.idx].done = !d[item.idx].done; localStorage.setItem(editKey("planes"),JSON.stringify(d)); renderPlanes(); });
+        const db = card.querySelector(".evidence-delete");
+        if (db) db.addEventListener("click", (e) => { e.stopPropagation(); const d = JSON.parse(localStorage.getItem(editKey("planes"))||"[]"); d.splice(item.idx,1); localStorage.setItem(editKey("planes"),JSON.stringify(d)); renderPlanes(); });
+      }
       list.appendChild(card);
     });
   }
@@ -1268,7 +1331,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadVideos() { return { edited: JSON.parse(localStorage.getItem(editKey("videos"))||"[]"), viewed: JSON.parse(localStorage.getItem(viewKey("videos"))||"[]") }; }
   function renderVideosCounter(edited) { const el = document.getElementById("videos-counter"); if (!el||!currentUser) return; const { viewed } = loadVideos(); const pct = Math.min(100,(edited.length/VIDEO_LIMIT)*100); el.innerHTML = `<span class="counter-label">Tuyos: ${edited.length}/${VIDEO_LIMIT} · Recibidos: ${viewed.length}</span><span class="counter-value">${edited.length}<span class="counter-max"> / ${VIDEO_LIMIT}</span></span><div class="counter-progress"><div class="counter-progress-fill" style="width:${pct}%"></div></div>`; }
 
-  let videoEdit = { item:null, arr:null };
+  let videoEdit = { item:null, arr:null, flipH:1, flipV:1, stickers:[] };
 
   function renderVideos() {
     setSectionContext("videos-context");
@@ -1292,7 +1355,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (entry.type === "add") {
         const c = document.createElement("div"); c.className = "cathedral-frame media-card"; c.style.borderStyle = "dashed";
         c.innerHTML = `<div class="video-frame" style="cursor:pointer;border-style:dashed;"><label class="upload-prompt" style="cursor:pointer;"><span class="upload-glyph">▷</span><span>Subir video</span><input type="file" accept="video/*"></label></div><h3 class="card-title">Nuevo Video</h3><p class="card-desc">Máx 500MB. Quedan ${VIDEO_LIMIT - edited.length}.</p>`;
-        c.querySelector('input[type="file"]').addEventListener("change", async (e) => { const file = e.target.files[0]; if (!file) return; if (file.size > 500*1024*1024) { alert("Video demasiado grande (máx 500MB)."); return; } const r = new FileReader(); r.onload = async () => { const id = `video_${currentUser.toLowerCase()}_${Date.now()}`; await MediaStore.save(id, r.result); edited.push({mediaId:id,date:"Fecha",title:"Nuevo Video",desc:"Descripción...",from:currentUser,trimStart:0,trimEnd:0,speed:1,size:100,muted:false,loop:false,rotation:0,flipH:1,flipV:1,brightness:100,contrast:100,saturate:100}); localStorage.setItem(editKey("videos"),JSON.stringify(edited)); renderVideos(); }; r.readAsDataURL(file); });
+        c.querySelector('input[type="file"]').addEventListener("change", async (e) => { const file = e.target.files[0]; if (!file) return; if (file.size > 500*1024*1024) { alert("Video demasiado grande (máx 500MB)."); return; } const r = new FileReader(); r.onload = async () => { const id = `video_${currentUser.toLowerCase()}_${Date.now()}`; await MediaStore.save(id, r.result); edited.push({mediaId:id,date:"Fecha",title:"Nuevo Video",desc:"Descripción...",from:currentUser,trimStart:0,trimEnd:0,speed:1,size:100,muted:true,loop:false,rotation:0,flipH:1,flipV:1,brightness:100,contrast:100,saturate:100,hue:0,sepia:0,cropX:50,cropY:50,cropZoom:100,stickers:[]}); localStorage.setItem(editKey("videos"),JSON.stringify(edited)); renderVideos(); }; r.readAsDataURL(file); });
         gallery.appendChild(c); return;
       }
       const item = entry.data;
@@ -1320,7 +1383,9 @@ document.addEventListener("DOMContentLoaded", () => {
           if (item.flipH === -1) transform += " scaleX(-1)";
           if (item.flipV === -1) transform += " scaleY(-1)";
           if (item.size && item.size !== 100) transform += ` scale(${item.size/100})`;
-          if (transform) { v.style.transform = transform.trim(); v.style.transformOrigin = "center"; }
+          if (item.cropZoom && item.cropZoom > 100) transform += ` scale(${item.cropZoom/100})`;
+          const cropX = item.cropX || 50, cropY = item.cropY || 50;
+          if (transform) { v.style.transform = transform.trim(); v.style.transformOrigin = `${cropX}% ${cropY}%`; }
           let filter = "";
           if (item.brightness && item.brightness !== 100) filter += ` brightness(${item.brightness}%)`;
           if (item.contrast && item.contrast !== 100) filter += ` contrast(${item.contrast}%)`;
@@ -1359,6 +1424,15 @@ document.addEventListener("DOMContentLoaded", () => {
           progressBar.addEventListener("click", (ev) => { ev.stopPropagation(); const rect = progressBar.getBoundingClientRect(); const pct = (ev.clientX - rect.left) / rect.width; v.currentTime = pct * v.duration; });
           wrapper.appendChild(progressBar);
           v.addEventListener("timeupdate", () => { if (v.duration) progressFill.style.width = (v.currentTime / v.duration * 100) + "%"; });
+          // Añadir stickers guardados como overlays
+          if (item.stickers && item.stickers.length) {
+            item.stickers.forEach((s) => {
+              const stEl = document.createElement("div");
+              stEl.style.cssText = `position:absolute;font-size:${s.size}px;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);pointer-events:none;z-index:4;text-shadow:0 0 8px rgba(0,0,0,0.8);`;
+              stEl.textContent = s.emoji;
+              wrapper.appendChild(stEl);
+            });
+          }
           fr.innerHTML = ""; fr.appendChild(wrapper);
         } else fr.innerHTML = `<span class="upload-glyph">⚠</span>`;
       });
@@ -1388,6 +1462,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("vedit-rotate").value = item.rotation || 0;
     if (document.getElementById("vedit-hue")) document.getElementById("vedit-hue").value = item.hue || 0;
     if (document.getElementById("vedit-sepia")) document.getElementById("vedit-sepia").value = item.sepia || 0;
+    if (document.getElementById("vedit-cropx")) document.getElementById("vedit-cropx").value = item.cropX || 50;
+    if (document.getElementById("vedit-cropy")) document.getElementById("vedit-cropy").value = item.cropY || 50;
+    if (document.getElementById("vedit-cropzoom")) document.getElementById("vedit-cropzoom").value = item.cropZoom || 100;
+    videoEdit.stickers = item.stickers || [];
+    initVideoStickerPicker();
     document.getElementById("video-trim-start").value = item.trimStart || 0;
     document.getElementById("video-trim-end").value = item.trimEnd || 0;
     document.getElementById("video-speed").value = item.speed || 1;
@@ -1399,6 +1478,59 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("video-edit-modal").classList.remove("hidden");
   }
 
+  window.setVideoEditMode = function (mode) {
+    document.querySelectorAll('[data-vmode]').forEach((b) => b.classList.toggle("active", b.dataset.vmode === mode));
+    document.getElementById("vadjust-controls").style.display = mode === "adjust" ? "grid" : "none";
+    document.getElementById("vcrop-controls").style.display = mode === "crop" ? "grid" : "none";
+    document.getElementById("vsticker-controls").style.display = mode === "stickers" ? "grid" : "none";
+  };
+
+  function initVideoStickerPicker() {
+    const picker = document.getElementById("vsticker-picker");
+    if (!picker) return;
+    picker.innerHTML = "";
+    STICKER_EMOJIS.forEach((emoji) => {
+      const btn = document.createElement("button");
+      btn.className = "sticker-btn";
+      btn.textContent = emoji;
+      btn.addEventListener("click", () => {
+        if (!videoEdit.stickers) videoEdit.stickers = [];
+        videoEdit.stickers.push({ emoji, x: 50, y: 50, size: 40 });
+        renderVideoStickers();
+      });
+      picker.appendChild(btn);
+    });
+    renderVideoStickers();
+  }
+
+  function renderVideoStickers() {
+    const wrap = document.getElementById("video-preview-wrap");
+    if (!wrap) return;
+    wrap.querySelectorAll(".vsticker").forEach((el) => el.remove());
+    if (!videoEdit.stickers) return;
+    videoEdit.stickers.forEach((s, i) => {
+      const el = document.createElement("div");
+      el.className = "sticker-overlay-item vsticker";
+      el.style.cssText = `position:absolute;font-size:${s.size}px;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);cursor:move;z-index:10;`;
+      el.textContent = s.emoji;
+      el.dataset.idx = i;
+      const del = document.createElement("button");
+      del.className = "sticker-delete";
+      del.textContent = "✕";
+      del.addEventListener("click", (ev) => { ev.stopPropagation(); videoEdit.stickers.splice(i, 1); renderVideoStickers(); });
+      el.appendChild(del);
+      // Drag
+      let drag = null;
+      el.addEventListener("mousedown", (ev) => { if (ev.target === del) return; drag = { x: ev.clientX, y: ev.clientY, ox: s.x, oy: s.y }; ev.preventDefault(); });
+      el.addEventListener("touchstart", (ev) => { if (ev.target === del) return; drag = { x: ev.touches[0].clientX, y: ev.touches[0].clientY, ox: s.x, oy: s.y }; ev.preventDefault(); }, { passive: false });
+      document.addEventListener("mousemove", (ev) => { if (!drag) return; const rect = wrap.getBoundingClientRect(); s.x = Math.max(0, Math.min(100, drag.ox + (ev.clientX - drag.x) / rect.width * 100)); s.y = Math.max(0, Math.min(100, drag.oy + (ev.clientY - drag.y) / rect.height * 100)); el.style.left = s.x + "%"; el.style.top = s.y + "%"; });
+      document.addEventListener("touchmove", (ev) => { if (!drag) return; ev.preventDefault(); const t = ev.touches[0]; const rect = wrap.getBoundingClientRect(); s.x = Math.max(0, Math.min(100, drag.ox + (t.clientX - drag.x) / rect.width * 100)); s.y = Math.max(0, Math.min(100, drag.oy + (t.clientY - drag.y) / rect.height * 100)); el.style.left = s.x + "%"; el.style.top = s.y + "%"; }, { passive: false });
+      document.addEventListener("mouseup", () => { drag = null; });
+      document.addEventListener("touchend", () => { drag = null; });
+      wrap.appendChild(el);
+    });
+  }
+
   window.applyVideoFilters = function () {
     const v = document.getElementById("edit-video-preview");
     const br = document.getElementById("vedit-brightness").value;
@@ -1408,6 +1540,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ro = document.getElementById("vedit-rotate").value;
     const hue = document.getElementById("vedit-hue") ? document.getElementById("vedit-hue").value : 0;
     const sepia = document.getElementById("vedit-sepia") ? document.getElementById("vedit-sepia").value : 0;
+    const cropX = document.getElementById("vedit-cropx") ? document.getElementById("vedit-cropx").value : 50;
+    const cropY = document.getElementById("vedit-cropy") ? document.getElementById("vedit-cropy").value : 50;
+    const cropZoom = document.getElementById("vedit-cropzoom") ? document.getElementById("vedit-cropzoom").value : 100;
     document.getElementById("vedit-brightness-val").textContent = br + "%";
     document.getElementById("vedit-contrast-val").textContent = ct + "%";
     document.getElementById("vedit-saturate-val").textContent = sa + "%";
@@ -1415,12 +1550,17 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("vedit-rotate-val").textContent = ro + "°";
     if (document.getElementById("vedit-hue-val")) document.getElementById("vedit-hue-val").textContent = hue + "°";
     if (document.getElementById("vedit-sepia-val")) document.getElementById("vedit-sepia-val").textContent = sepia + "%";
+    if (document.getElementById("vedit-cropx-val")) document.getElementById("vedit-cropx-val").textContent = cropX + "%";
+    if (document.getElementById("vedit-cropy-val")) document.getElementById("vedit-cropy-val").textContent = cropY + "%";
+    if (document.getElementById("vedit-cropzoom-val")) document.getElementById("vedit-cropzoom-val").textContent = cropZoom + "%";
     let transform = `rotate(${ro}deg)`;
     if (videoEdit.flipH === -1) transform += " scaleX(-1)";
     if (videoEdit.flipV === -1) transform += " scaleY(-1)";
     transform += ` scale(${sc/100})`;
+    // Aplicar zoom de recorte
+    if (cropZoom > 100) transform += ` scale(${cropZoom/100})`;
     v.style.transform = transform;
-    v.style.transformOrigin = "center";
+    v.style.transformOrigin = `${cropX}% ${cropY}%`;
     v.style.filter = `brightness(${br}%) contrast(${ct}%) saturate(${sa}%) hue-rotate(${hue}deg) sepia(${sepia}%)`;
   };
 
@@ -1449,6 +1589,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Guardar hue y sepia si existen
     orig.hue = document.getElementById("vedit-hue") ? parseInt(document.getElementById("vedit-hue").value) : 0;
     orig.sepia = document.getElementById("vedit-sepia") ? parseInt(document.getElementById("vedit-sepia").value) : 0;
+    // Guardar recorte
+    orig.cropX = document.getElementById("vedit-cropx") ? parseInt(document.getElementById("vedit-cropx").value) : 50;
+    orig.cropY = document.getElementById("vedit-cropy") ? parseInt(document.getElementById("vedit-cropy").value) : 50;
+    orig.cropZoom = document.getElementById("vedit-cropzoom") ? parseInt(document.getElementById("vedit-cropzoom").value) : 100;
+    // Guardar stickers
+    orig.stickers = videoEdit.stickers || [];
     localStorage.setItem(editKey("videos"), JSON.stringify(videoEdit.arr));
     closeVideoEdit();
     renderVideos();
@@ -1638,7 +1784,31 @@ document.addEventListener("DOMContentLoaded", () => {
     {id:"latinsquare",icon:"⊞",name:"Cuadrado Latino",desc:"Completa sin repetir"},
     {id:"reactionpro",icon:"⚡",name:"Reacción Pro",desc:"5 rondas de reacción"},
     {id:"colormatch",icon:"◉",name:"Match de Color",desc:"Empareja colores"},
-    {id:"numberhunt",icon:"⌕",name:"Caza Números",desc:"Encuentra el número"}
+    {id:"numberhunt",icon:"⌕",name:"Caza Números",desc:"Encuentra el número"},
+    {id:"memorynum",icon:"③",name:"Memoria Numérica",desc:"Memoriza números y repítelos"},
+    {id:"tetris",icon:"▣",name:"Mini Tetris",desc:"Coloca piezas sin llenar"},
+    // 21 juegos adicionales
+    {id:"slots",icon:"🎰",name:"Tragamonedas",desc:"Gira y gana"},
+    {id:"coinflip",icon:"◐",name:"Cara o Cruz",desc:"Adivina la moneda"},
+    {id:"warcards",icon:"⚔",name:"Guerra de Cartas",desc:"Carta más alta gana"},
+    {id:"highlow",icon:"↑",name:"Mayor o Menor",desc:"¿La próxima es mayor?"},
+    {id:"speedtap",icon:"⚡",name:"Toque Rápido",desc:"Toca lo más rápido posible"},
+    {id:"whackamole",icon:"⚒",name:"Golpea al Topo",desc:"Pega los topos"},
+    {id:"luckywheel",icon:"❂",name:"Rueda Suerte",desc:"Gira por premios"},
+    {id:"treasure",icon:"⚜",name:"Caza Tesoro",desc:"Encuentra el tesoro"},
+    {id:"fortune",icon:"❖",name:"Galleta Fortuna",desc:"Tu destino de amor"},
+    {id:"lovecalc",icon:"♥",name:"Calculadora Amor",desc:"% de compatibilidad"},
+    {id:"diceduel",icon:"⚅",name:"Duelo Dados",desc:"Tú vs Santuario"},
+    {id:"wordscramble",icon:"❖",name:"Palabras Mezcladas",desc:"Ordena las letras"},
+    {id:"numpuzzle",icon:"⊞",name:"Puzzle Numérico",desc:"Completa el patrón"},
+    {id:"colorquiz",icon:"◉",name:"Quiz de Colores",desc:"¿Qué color es?"},
+    {id:"arrowdodge",icon:"➤",name:"Esquiva Flechas",desc:"Evita las flechas"},
+    {id:"bubblepop",icon:"❍",name:"Revienta Burbujas",desc:"Ponche burbujas rápido"},
+    {id:"memorycards2",icon:"❖",name:"Memoria Pro",desc:"Más cartas, más retos"},
+    {id:"quickmath2",icon:"÷",name:"Mate Mixta",desc:"Suma, resta, multiplica"},
+    {id:"lucky7",icon:"7",name:"Lucky 7",desc:"Consigue el 7"},
+    {id:"match3",icon:"❖",name:"Match 3",desc:" junta 3 iguales"},
+    {id:"tapduel",icon:"⚡",name:"Duelo de Toques",desc:"60s de clics"}
   ];
 
   window.openGamesArcade = function () {
@@ -1924,6 +2094,95 @@ document.addEventListener("DOMContentLoaded", () => {
   let nhTarget=0,nhStart=0,nhInterval=null;
   window.initNumberHunt=function(){nhTarget=Math.floor(Math.random()*90)+10;nhStart=Date.now();document.getElementById("nh-target").textContent=nhTarget;if(nhInterval)clearInterval(nhInterval);nhInterval=setInterval(()=>{document.getElementById("nh-time").textContent=Math.floor((Date.now()-nhStart)/1000);},1000);const grid=document.getElementById("nh-grid");grid.innerHTML="";const nums=Array.from({length:9},()=>Math.floor(Math.random()*90)+10);if(!nums.includes(nhTarget))nums[Math.floor(Math.random()*9)]=nhTarget;nums.sort(()=>Math.random()-0.5);nums.forEach((n)=>{const c=document.createElement("div");c.className="color-cell";c.style.background="#3b0000";c.style.color="var(--white-pure)";c.style.fontFamily="'Cinzel Decorative',serif";c.style.fontSize="1.3rem";c.textContent=n;c.addEventListener("click",()=>{if(n===nhTarget){clearInterval(nhInterval);const t=Math.floor((Date.now()-nhStart)/1000);openSacredModal({icon:"⌕",title:"Caza Números",text:`¡Encontrado en ${t}s!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initNumberHunt();">Otra</button>`});}else{c.style.visibility="hidden";}});grid.appendChild(c);});};
 
+  // Memoria Numérica
+  let mnSeq=[],mnLevel=1,mnShowing=false;
+  window.initMemoryNum=function(){mnSeq=[];mnLevel=1;document.getElementById("mn-level").textContent="1";mnNext();};
+  function mnNext(){mnSeq.push(Math.floor(Math.random()*10));mnShowing=true;document.getElementById("mn-display").textContent="...";document.getElementById("mn-input").value="";document.getElementById("mn-msg").textContent="Memoriza...";let i=0;const iv=setInterval(()=>{if(i>=mnSeq.length){clearInterval(iv);mnShowing=false;document.getElementById("mn-display").textContent="?";document.getElementById("mn-msg").textContent="Escribe los números en orden.";}else{document.getElementById("mn-display").textContent=mnSeq[i];i++;}},800);}
+  window.checkMemoryNum=function(){if(mnShowing)return;const v=document.getElementById("mn-input").value.trim().replace(/\s/g,"");const ans=mnSeq.join("");if(v===ans){mnLevel++;document.getElementById("mn-level").textContent=mnLevel;document.getElementById("mn-msg").textContent="¡Correcto!";openSacredModal({icon:"③",title:"Memoria Numérica",text:`¡Nivel ${mnLevel}!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();mnNext();">Siguiente</button>`});}else{document.getElementById("mn-msg").textContent=`Incorrecto. Era: ${ans}`;openSacredModal({icon:"③",title:"Memoria",text:`Era: ${ans}`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initMemoryNum();">Otra</button>`});}};
+
+  // Mini Tetris
+  let ttGrid=[],ttPiece=null,ttLines=0,ttInterval=null,ttCtx=null;
+  const TT_PIECES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+  window.initTetris=function(){ttGrid=Array.from({length:20},()=>Array(10).fill(0));ttLines=0;document.getElementById("tt-lines").textContent="0";if(ttInterval)clearInterval(ttInterval);const c=document.getElementById("tt-canvas");ttCtx=c.getContext("2d");ttNewPiece();ttInterval=setInterval(ttTick,300);document.onkeydown=(e)=>{if(!document.getElementById("tetris")?.classList.contains("active"))return;if(e.key==="ArrowLeft"){e.preventDefault();ttPiece.x--;if(ttCollide())ttPiece.x++;}if(e.key==="ArrowRight"){e.preventDefault();ttPiece.x++;if(ttCollide())ttPiece.x--;}if(e.key==="ArrowDown"){e.preventDefault();ttTick();}if(e.key==="ArrowUp"){e.preventDefault();ttRotate();}};};
+  function ttNewPiece(){ttPiece={shape:TT_PIECES[Math.floor(Math.random()*TT_PIECES.length)],x:4,y:0};if(ttCollide()){clearInterval(ttInterval);openSacredModal({icon:"▣",title:"Tetris",text:`¡${ttLines} líneas!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initTetris();">Otra</button>`});}}
+  function ttCollide(){for(let r=0;r<ttPiece.shape.length;r++)for(let c=0;c<ttPiece.shape[r].length;c++)if(ttPiece.shape[r][c]){const x=ttPiece.x+c,y=ttPiece.y+r;if(x<0||x>=10||y>=20)return true;if(y>=0&&ttGrid[y][x])return true;}return false;}
+  function ttMerge(){for(let r=0;r<ttPiece.shape.length;r++)for(let c=0;c<ttPiece.shape[r].length;c++)if(ttPiece.shape[r][c]&&ttPiece.y+r>=0)ttGrid[ttPiece.y+r][ttPiece.x+c]=1;}
+  function ttRotate(){const old=ttPiece.shape;ttPiece.shape=old[0].map((_,i)=>old.map((r)=>r[i]).reverse());if(ttCollide())ttPiece.shape=old;}
+  function ttTick(){ttPiece.y++;if(ttCollide()){ttPiece.y--;ttMerge();let cleared=0;for(let r=19;r>=0;r--)if(ttGrid[r].every((v)=>v)){ttGrid.splice(r,1);ttGrid.unshift(Array(10).fill(0));cleared++;r++;}if(cleared){ttLines+=cleared;document.getElementById("tt-lines").textContent=ttLines;}ttNewPiece();}ttDraw();}
+  function ttDraw(){const c=document.getElementById("tt-canvas");if(!ttCtx)return;ttCtx.fillStyle="#030303";ttCtx.fillRect(0,0,c.width,c.height);const sz=20;for(let r=0;r<20;r++)for(let col=0;col<10;col++)if(ttGrid[r][col]){ttCtx.fillStyle="#b80000";ttCtx.fillRect(col*sz,r*sz,sz-1,sz-1);}if(ttPiece)for(let r=0;r<ttPiece.shape.length;r++)for(let col=0;col<ttPiece.shape[r].length;col++)if(ttPiece.shape[r][col]){ttCtx.fillStyle="#e60000";ttCtx.fillRect((ttPiece.x+col)*sz,(ttPiece.y+r)*sz,sz-1,sz-1);}}
+
+  // ================= 21 JUEGOS ADICIONALES =================
+  // Tragamonedas
+  let slPoints=100;
+  window.spinSlots=function(){if(slPoints<10)return;slPoints-=10;const syms=["♥","♛","✠","❖","✧","⚜"];const r=Array.from({length:3},()=>syms[Math.floor(Math.random()*syms.length)]);document.getElementById("sl-display").textContent=r.join(" ");if(r[0]===r[1]&&r[1]===r[2]){slPoints+=50;document.getElementById("sl-msg").textContent="¡TRIPLE! +50";}else if(r[0]===r[1]||r[1]===r[2]||r[0]===r[2]){slPoints+=15;document.getElementById("sl-msg").textContent="¡Par! +15";}else{document.getElementById("sl-msg").textContent="Sin suerte.";}document.getElementById("sl-points").textContent=slPoints;if(slPoints<=0)openSacredModal({icon:"✦",title:"Slots",text:"Sin puntos.",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();slPoints=100;document.getElementById('sl-points').textContent=100;">Reiniciar</button>`});};
+  // Cara o Cruz
+  let cfScore=0;
+  window.flipCoin=function(g){const r=Math.random()>0.5?"cara":"cruz";document.getElementById("cf-display").textContent=r==="cara"?"♚":"♛";if(r===g){cfScore++;document.getElementById("cf-msg").textContent="¡Correcto!";}else{document.getElementById("cf-msg").textContent="Incorrecto.";}document.getElementById("cf-score").textContent=cfScore;};
+  // Guerra de Cartas
+  let wcYou=0,wcCpu=0;
+  window.drawWarCard=function(){const y=Math.floor(Math.random()*13)+1,c=Math.floor(Math.random()*13)+1;const f={1:"A",11:"J",12:"Q",13:"K"};document.getElementById("wc-cards").textContent=`Tú: ${f[y]||y} vs CPU: ${f[c]||c}`;if(y>c){wcYou++;document.getElementById("wc-msg").textContent="¡Ganaste!";}else if(y<c){wcCpu++;document.getElementById("wc-msg").textContent="Perdiste.";}else{document.getElementById("wc-msg").textContent="Empate.";}document.getElementById("wc-you").textContent=wcYou;document.getElementById("wc-cpu").textContent=wcCpu;if(wcYou>=5||wcCpu>=5)openSacredModal({icon:"⚔",title:"Guerra",text:wcYou>wcCpu?"¡Ganaste la guerra!":"La CPU ganó.",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();wcYou=0;wcCpu=0;document.getElementById('wc-you').textContent=0;document.getElementById('wc-cpu').textContent=0;">Otra</button>`});};
+  // Mayor o Menor
+  let hlCurrent=0,hlStreak=0;
+  window.initHighLow=function(){hlCurrent=Math.floor(Math.random()*13)+1;hlStreak=0;document.getElementById("hl-streak").textContent="0";document.getElementById("hl-card").textContent=hlCurrent;document.getElementById("hl-msg").textContent="";};
+  window.hlGuess=function(g){const next=Math.floor(Math.random()*13)+1;const correct=(g==="higher"&&next>hlCurrent)||(g==="lower"&&next<hlCurrent);document.getElementById("hl-card").textContent=next;if(correct){hlStreak++;document.getElementById("hl-msg").textContent="¡Correcto!";}else{document.getElementById("hl-msg").textContent="Incorrecto.";openSacredModal({icon:"↑",title:"Mayor/Menor",text:`Racha: ${hlStreak}`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initHighLow();">Otra</button>`});return;}hlCurrent=next;document.getElementById("hl-streak").textContent=hlStreak;};
+  // Toque Rápido
+  let stTaps=0,stTime=10,stInterval=null;
+  window.initSpeedTap=function(){stTaps=0;stTime=10;document.getElementById("st-taps").textContent="0";document.getElementById("st-time").textContent="10";if(stInterval)clearInterval(stInterval);const area=document.getElementById("st-area");area.className="reaction-area ready";area.textContent="¡CLIC RÁPIDO!";area.onclick=()=>{stTaps++;document.getElementById("st-taps").textContent=stTaps;};stInterval=setInterval(()=>{stTime--;document.getElementById("st-time").textContent=stTime;if(stTime<=0){clearInterval(stInterval);area.onclick=null;area.className="reaction-area result";area.textContent=`¡${stTaps} clics!`;openSacredModal({icon:"⚡",title:"Toque Rápido",text:`¡${stTaps} clics en 10s!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initSpeedTap();">Otra</button>`});}},1000);};
+  // Golpea al Topo
+  let waScore=0,waTime=20,waInterval=null;
+  window.initWhackAMole=function(){waScore=0;waTime=20;document.getElementById("wa-score").textContent="0";document.getElementById("wa-time").textContent="20";if(waInterval)clearInterval(waInterval);const grid=document.getElementById("wa-grid");grid.innerHTML="";for(let i=0;i<9;i++){const c=document.createElement("div");c.className="memory-card";c.style.cursor="pointer";c.addEventListener("click",()=>{if(c.textContent==="♞"){waScore++;document.getElementById("wa-score").textContent=waScore;c.textContent="";c.classList.remove("flipped");}});grid.appendChild(c);}waInterval=setInterval(()=>{waTime--;document.getElementById("wa-time").textContent=waTime;if(waTime<=0){clearInterval(waInterval);openSacredModal({icon:"⚒",title:"Topos",text:`¡${waScore} puntos!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initWhackAMole();">Otra</button>`});return;}const cells=grid.children;Array.from(cells).forEach(c=>{c.textContent="";c.classList.remove("flipped");});const idx=Math.floor(Math.random()*9);cells[idx].textContent="♞";cells[idx].classList.add("flipped");},800);};
+  // Rueda de la Suerte
+  const LW_PRIZES=["Un beso","Un abrazo","Una carta","Una cita","Un masaje","Cantar","3 razones","Un baile","Un poema","Una foto"];
+  window.spinLuckyWheel=function(){const prize=LW_PRIZES[Math.floor(Math.random()*LW_PRIZES.length)];document.getElementById("lw-display").textContent="...";setTimeout(()=>{document.getElementById("lw-display").textContent="❖ "+prize+" ❖";spawnHeartsRain(15);},1000);};
+  // Caza del Tesoro
+  let trTries=5,trTreasure=0;
+  window.initTreasure=function(){trTries=5;trTreasure=Math.floor(Math.random()*9);document.getElementById("tr-tries").textContent="5";document.getElementById("tr-msg").textContent="";const grid=document.getElementById("tr-grid");grid.innerHTML="";for(let i=0;i<9;i++){const c=document.createElement("div");c.className="color-cell";c.style.background="#3b0000";c.style.fontSize="1.5rem";c.textContent="⚜";c.addEventListener("click",()=>{if(i===trTreasure){c.style.background="var(--crimson-glow)";c.textContent="⚜";document.getElementById("tr-msg").textContent="¡Tesoro encontrado!";openSacredModal({icon:"⚜",title:"Tesoro",text:"¡Encontraste el tesoro!",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initTreasure();">Otra</button>`});}else{trTries--;document.getElementById("tr-tries").textContent=trTries;c.style.visibility="hidden";if(trTries<=0){openSacredModal({icon:"⚜",title:"Tesoro",text:"Sin intentos.",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initTreasure();">Otra</button>`});}}});grid.appendChild(c);}};
+  // Galleta de la Fortuna
+  const FT_MSGS=["El amor que buscas está más cerca de lo que crees.","Tu corazón pronto recibirá una sorpresa inesperada.","La paciencia dará frutos de amor muy pronto.","Alguien piensa en ti en este preciso momento.","Tu sonrisa iluminará el día de alguien especial.","Un viaje inesperado traerá romance.","El destino tiene una sorpresa hermosa reservada para ti.","Pronto recibirás noticias que te harán muy feliz."];
+  window.openFortune=function(){const msg=FT_MSGS[Math.floor(Math.random()*FT_MSGS.length)];document.getElementById("ft-display").textContent="❖";document.getElementById("ft-msg").textContent="...";setTimeout(()=>{document.getElementById("ft-msg").textContent=msg;spawnHeartsRain(10);},800);};
+  // Calculadora de Amor
+  window.calcLove=function(){const n1=document.getElementById("lc-name1").value.trim(),n2=document.getElementById("lc-name2").value.trim();if(!n1||!n2)return;const combined=(n1+n2).toLowerCase();let hash=0;for(let i=0;i<combined.length;i++)hash=((hash<<5)-hash)+combined.charCodeAt(i);const pct=Math.abs(hash)%100+1;document.getElementById("lc-result").textContent=pct+"%";document.getElementById("lc-msg").textContent=pct>=80?"¡Almas gemelas!":pct>=60?"¡Buena compatibilidad!":pct>=40?"Hay potencial.":"Sigan intentando.";if(pct>=80)spawnHeartsRain(30);};
+  // Duelo de Dados
+  let ddYou=0,ddCpu=0;
+  window.rollDiceDuel=function(){const f=["⚀","⚁","⚂","⚃","⚄","⚅"];const y=Math.floor(Math.random()*6),c=Math.floor(Math.random()*6);document.getElementById("dd-d1").textContent=f[y];document.getElementById("dd-d2").textContent=f[c];if(y+1>c+1){ddYou++;document.getElementById("dd-msg").textContent="¡Ganaste!";}else if(y+1<c+1){ddCpu++;document.getElementById("dd-msg").textContent="Perdiste.";}else{document.getElementById("dd-msg").textContent="Empate.";}document.getElementById("dd-you").textContent=ddYou;document.getElementById("dd-cpu").textContent=ddCpu;if(ddYou>=5||ddCpu>=5)openSacredModal({icon:"⚅",title:"Duelo",text:ddYou>ddCpu?"¡Ganaste!":"La CPU ganó.",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();ddYou=0;ddCpu=0;document.getElementById('dd-you').textContent=0;document.getElementById('dd-cpu').textContent=0;">Otra</button>`});};
+  // Palabras Mezcladas
+  const WS_WORDS2=["CORAZON","ETERNIDAD","SANTUARIO","DEVOCION","CARMESI","BESO","ABRAZO","PASION","ROMANCE","ALMAS"];let wsWord="",wsIdx=0;
+  window.initWordScramble=function(){wsWord=WS_WORDS2[wsIdx%WS_WORDS2.length];wsIdx++;document.getElementById("ws-num").textContent=((wsIdx-1)%WS_WORDS2.length+1)+"/"+WS_WORDS2.length;const sh=wsWord.split("").sort(()=>Math.random()-0.5).join("");document.getElementById("ws-display").textContent=sh;document.getElementById("ws-input").value="";document.getElementById("ws-msg").textContent="";};
+  window.checkWordScramble=function(){const v=document.getElementById("ws-input").value.trim().toUpperCase();if(v===wsWord){document.getElementById("ws-msg").textContent="¡Correcto!";openSacredModal({icon:"❖",title:"Palabra",text:`¡${wsWord}!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initWordScramble();">Otra</button>`});}else{document.getElementById("ws-msg").textContent="Incorrecto.";};};
+  // Puzzle Numérico
+  let npAnswer=0,npPattern="";
+  window.initNumPuzzle=function(){const a=Math.floor(Math.random()*10)+1,d=Math.floor(Math.random()*5)+1;npPattern=`${a}, ${a+d}, ${a+2*d}, ?`;npAnswer=a+3*d;document.getElementById("np-display").textContent=npPattern;document.getElementById("np-input").value="";document.getElementById("np-msg").textContent="";};
+  window.checkNumPuzzle=function(){const v=parseInt(document.getElementById("np-input").value);if(v===npAnswer){document.getElementById("np-msg").textContent="¡Correcto!";openSacredModal({icon:"⊞",title:"Puzzle",text:"¡Correcto!",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initNumPuzzle();">Otra</button>`});}else{document.getElementById("np-msg").textContent="Incorrecto.";};};
+  // Quiz de Colores
+  let cqScore=0;
+  const CQ_COLORS=[{n:"Rojo",h:"#b80000"},{n:"Blanco",h:"#ffffff"},{n:"Negro",h:"#000000"},{n:"Gris",h:"#808080"},{n:"Carmesí",h:"#e60000"},{n:"Plata",h:"#d4d4d4"}];
+  function nextCQ(){const target=CQ_COLORS[Math.floor(Math.random()*CQ_COLORS.length)];document.getElementById("cq-color").style.background=target.h;const opts=[target,...CQ_COLORS.filter(c=>c.n!==target.n)].sort(()=>Math.random()-0.5).slice(0,4);const grid=document.getElementById("cq-options");grid.innerHTML="";opts.forEach(c=>{const b=document.createElement("button");b.className="trivia-opt-btn";b.textContent=c.n;b.addEventListener("click",()=>{if(c.n===target.n){cqScore++;document.getElementById("cq-score").textContent=cqScore;nextCQ();}else{b.style.opacity="0.3";}});grid.appendChild(b);});}
+  window.initColorMatch=function(){cqScore=0;document.getElementById("cq-score").textContent="0";nextCQ();};
+  // Esquiva Flechas
+  let adInterval=null,adPlayer={x:200,y:150},adArrows=[],adTime=0,adStart=0;
+  window.initArrowDodge=function(){adPlayer={x:200,y:150};adArrows=[];adStart=Date.now();if(adInterval)clearInterval(adInterval);const c=document.getElementById("ad-canvas");const ctx=c.getContext("2d");document.onkeydown=(e)=>{if(e.key==="ArrowLeft")adPlayer.x=Math.max(10,adPlayer.x-15);if(e.key==="ArrowRight")adPlayer.x=Math.min(c.width-10,adPlayer.x+15);if(e.key==="ArrowUp")adPlayer.y=Math.max(10,adPlayer.y-15);if(e.key==="ArrowDown")adPlayer.y=Math.min(c.height-10,adPlayer.y+15);};adInterval=setInterval(()=>{adTime=Math.floor((Date.now()-adStart)/1000);document.getElementById("ad-time").textContent=adTime;if(Math.random()<0.15)adArrows.push({x:Math.random()*c.width,y:-10,vy:Math.random()*3+2});adArrows.forEach(a=>a.y+=a.vy);adArrows=adArrows.filter(a=>{if(Math.hypot(a.x-adPlayer.x,a.y-adPlayer.y)<15){clearInterval(adInterval);openSacredModal({icon:"➤",title:"Esquiva",text:`Sobreviviste ${adTime}s`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initArrowDodge();">Otra</button>`});return false;}return a.y<c.height;});ctx.fillStyle="#030303";ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle="#e60000";ctx.beginPath();ctx.arc(adPlayer.x,adPlayer.y,8,0,Math.PI*2);ctx.fill();ctx.fillStyle="#b80000";adArrows.forEach(a=>{ctx.fillRect(a.x-2,a.y-5,4,10);});},30);};
+  // Revienta Burbujas
+  let bpScore=0,bpTime=15,bpInterval=null;
+  window.initBubblePop=function(){bpScore=0;bpTime=15;document.getElementById("bp-score").textContent="0";document.getElementById("bp-time").textContent="15";if(bpInterval)clearInterval(bpInterval);const grid=document.getElementById("bp-grid");grid.innerHTML="";for(let i=0;i<16;i++){const c=document.createElement("div");c.className="memory-card";c.style.cursor="pointer";c.innerHTML=`<span class="memory-symbol" style="display:block;color:var(--crimson-vivid);">❍</span>`;c.addEventListener("click",()=>{if(c.style.visibility!=="hidden"){bpScore++;document.getElementById("bp-score").textContent=bpScore;c.style.visibility="hidden";}});grid.appendChild(c);}bpInterval=setInterval(()=>{bpTime--;document.getElementById("bp-time").textContent=bpTime;if(bpTime<=0){clearInterval(bpInterval);openSacredModal({icon:"❍",title:"Burbujas",text:`¡${bpScore} burbujas!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initBubblePop();">Otra</button>`});}},1000);};
+  // Memoria Pro (10 pares)
+  let mc2Cards=[],mc2Flipped=[],mc2Moves=0,mc2Matched=0;
+  window.initMemoryCards2=function(){const syms=["♥","❤","❥","❣","♛","♚","✠","❖","✧","⚜"];mc2Cards=[...syms,...syms].sort(()=>Math.random()-0.5);mc2Flipped=[];mc2Moves=0;mc2Matched=0;document.getElementById("mc2-pairs").textContent="0/10";document.getElementById("mc2-moves").textContent="0";const grid=document.getElementById("mc2-grid");grid.innerHTML="";mc2Cards.forEach((s,i)=>{const c=document.createElement("div");c.className="memory-card";c.innerHTML=`<span class="memory-symbol">${s}</span>`;c.addEventListener("click",()=>{if(mc2Flipped.length>=2||c.classList.contains("flipped")||c.classList.contains("matched"))return;c.classList.add("flipped");mc2Flipped.push({i,c,sym:s});if(mc2Flipped.length===2){mc2Moves++;document.getElementById("mc2-moves").textContent=mc2Moves;setTimeout(()=>{if(mc2Flipped[0].sym===mc2Flipped[1].sym){mc2Flipped[0].c.classList.add("matched");mc2Flipped[1].c.classList.add("matched");mc2Matched++;document.getElementById("mc2-pairs").textContent=mc2Matched+"/10";if(mc2Matched===10)openSacredModal({icon:"❖",title:"Memoria Pro",text:`¡${mc2Moves} movimientos!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initMemoryCards2();">Otra</button>`});}else{mc2Flipped[0].c.classList.remove("flipped");mc2Flipped[1].c.classList.remove("flipped");}mc2Flipped=[];},700);}});grid.appendChild(c);});};
+  // Mate Mixta
+  let qm2Score=0,qm2Time=30,qm2Interval=null,qm2Answer=0,qm2Op="";
+  window.initQuickMath2=function(){qm2Score=0;qm2Time=30;document.getElementById("qm2-score").textContent="0";document.getElementById("qm2-time").textContent="30";if(qm2Interval)clearInterval(qm2Interval);nextQM2();qm2Interval=setInterval(()=>{qm2Time--;document.getElementById("qm2-time").textContent=qm2Time;if(qm2Time<=0){clearInterval(qm2Interval);openSacredModal({icon:"÷",title:"Mate Mixta",text:`¡${qm2Score} puntos!`,withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initQuickMath2();">Otra</button>`});}},1000);};
+  function nextQM2(){const a=Math.floor(Math.random()*20)+1,b=Math.floor(Math.random()*20)+1;const ops=["+","-","×","÷"];qm2Op=ops[Math.floor(Math.random()*4)];if(qm2Op==="+")qm2Answer=a+b;if(qm2Op==="-")qm2Answer=a-b;if(qm2Op==="×")qm2Answer=a*b;if(qm2Op==="÷"){const r=a*b;qm2Answer=a;document.getElementById("qm2-display").textContent=`${r} ${qm2Op} ${b} = ?`;return;}document.getElementById("qm2-display").textContent=`${a} ${qm2Op} ${b} = ?`;document.getElementById("qm2-input").value="";}
+  window.checkQuickMath2=function(){const v=parseInt(document.getElementById("qm2-input").value);if(v===qm2Answer){qm2Score++;document.getElementById("qm2-score").textContent=qm2Score;nextQM2();}};
+  // Lucky 7
+  let l7Tries=0,l7Sevens=0;
+  window.rollLucky7=function(){const r=Math.floor(Math.random()*10)+1;document.getElementById("l7-display").textContent=r;l7Tries++;if(r===7){l7Sevens++;document.getElementById("l7-msg").textContent="¡LUCKY 7!";spawnHeartsRain(20);}else{document.getElementById("l7-msg").textContent=`Salió ${r}.`;}document.getElementById("l7-tries").textContent=l7Tries;document.getElementById("l7-sevens").textContent=l7Sevens;};
+  // Match 3
+  let m3Grid=[],m3Score=0;
+  window.initMatch3=function(){m3Score=0;document.getElementById("m3-score").textContent="0";const syms=["♥","♛","✠","❖","✧","⚜"];m3Grid=Array.from({length:36},()=>syms[Math.floor(Math.random()*6)]);renderM3();};
+  function renderM3(){const grid=document.getElementById("m3-grid");grid.innerHTML="";m3Grid.forEach((s,i)=>{const c=document.createElement("div");c.className="g2048-cell";c.textContent=s;c.style.cursor="pointer";c.addEventListener("click",()=>{const row=Math.floor(i/6),col=i%6;const matches=[i];for(let c2=col+1;c2<6;c2++){const ni=row*6+c2;if(m3Grid[ni]===s)matches.push(ni);else break;}for(let c2=col-1;c2>=0;c2--){const ni=row*6+c2;if(m3Grid[ni]===s)matches.push(ni);else break;}for(let r2=row+1;r2<6;r2++){const ni=r2*6+col;if(m3Grid[ni]===s)matches.push(ni);else break;}for(let r2=row-1;r2>=0;r2--){const ni=r2*6+col;if(m3Grid[ni]===s)matches.push(ni);else break;}if(matches.length>=3){m3Score+=matches.length;document.getElementById("m3-score").textContent=m3Score;matches.forEach(mi=>{m3Grid[mi]=["♥","♛","✠","❖","✧","⚜"][Math.floor(Math.random()*6)];});renderM3();}});grid.appendChild(c);});};
+  // Duelo de Toques
+  let tdYou=0,tdCpu=0,tdTime=60,tdInterval=null;
+  window.initTapDuel=function(){tdYou=0;tdCpu=0;tdTime=60;document.getElementById("td-you").textContent="0";document.getElementById("td-cpu").textContent="0";document.getElementById("td-time").textContent="60";if(tdInterval)clearInterval(tdInterval);const area=document.getElementById("td-area");area.className="reaction-area ready";area.textContent="¡CLIC!";area.onclick=()=>{tdYou++;document.getElementById("td-you").textContent=tdYou;};tdInterval=setInterval(()=>{tdTime--;tdCpu+=Math.floor(Math.random()*3);document.getElementById("td-cpu").textContent=tdCpu;document.getElementById("td-time").textContent=tdTime;if(tdTime<=0){clearInterval(tdInterval);area.onclick=null;area.className="reaction-area result";area.textContent=`Tú: ${tdYou} | CPU: ${tdCpu}`;openSacredModal({icon:"⚡",title:"Duelo",text:tdYou>tdCpu?"¡Ganaste!":tdYou<tdCpu?"La CPU ganó.":"Empate.",withHearts:true,actionsHTML:`<button class="btn-crimson" onclick="closeSacredModal();initTapDuel();">Otra</button>`});}},1000);};
+
   // ================= ATMÓSFERA =================
   const cursorGlow=document.getElementById("cursor-glow");
   document.addEventListener("mousemove",(e)=>{cursorGlow.style.left=`${e.clientX}px`;cursorGlow.style.top=`${e.clientY}px`;});
@@ -1937,6 +2196,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ================= INIT =================
   function initAllSections() {
+    // Limpieza una sola vez: eliminar todo el contenido predefinido de las secciones de texto
+    if (!localStorage.getItem("kd_content_cleaned_v2")) {
+      const sectionsToClean = [
+        "kd_evidencias_for_kevin", "kd_evidencias_for_dominic",
+        "kd_celebraciones",
+        "kd_recuerdos_for_kevin", "kd_recuerdos_for_dominic",
+        "kd_nunca_olvidar_for_kevin", "kd_nunca_olvidar_for_dominic",
+        "kd_logros_for_kevin", "kd_logros_for_dominic",
+        "kd_admiro_for_kevin", "kd_admiro_for_dominic",
+        "kd_gracias_for_kevin", "kd_gracias_for_dominic",
+        "kd_parejas_for_kevin", "kd_parejas_for_dominic",
+        "kd_salidas_for_kevin", "kd_salidas_for_dominic",
+        "kd_planes_for_kevin", "kd_planes_for_dominic",
+        "kd_razones_for_kevin", "kd_razones_for_dominic",
+        "kd_recuerdan_for_kevin", "kd_recuerdan_for_dominic"
+      ];
+      sectionsToClean.forEach((key) => localStorage.removeItem(key));
+      localStorage.setItem("kd_content_cleaned_v2", "1");
+    }
+
     renderPeriodicTable(); initLetter(); renderEvidencias(); renderCelebrations();
     renderRazones(); renderNunca(); renderGracias(); renderAdmiro(); renderParejas(); renderLogros();
     renderRecuerdos(); renderSalidas(); renderPlanes(); renderRecuerdan();
@@ -1945,10 +2224,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initMinesweeper(); drawMaze(); initWordSearch(); renderQuizQ();
     initMemory(); initHangman(); initTicTacToe(); initConnect4();
     initSimon(); initAdivina(); initPuzzle();
-    // Nuevos juegos se inicializan al abrir su pestaña
   }
 
   const savedUser=sessionStorage.getItem("gothic_user");
   const savedMode=sessionStorage.getItem("gothic_mode")||"editor";
   if (savedUser&&VALID_USERS.includes(savedUser)) unlockApp(savedUser,savedMode);
-}); 
+});
