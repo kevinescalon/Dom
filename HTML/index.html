@@ -1,9 +1,11 @@
+ew
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kevin & Dominic | Santuario Carmesí</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23030303'/%3E%3Ctext x='15' y='65' font-family='serif' font-size='45' font-weight='bold' fill='%23ffffff'%3EK%3C/text%3E%3Ctext x='42' y='62' font-family='serif' font-size='35' fill='%23b80000'%3E%E2%80%A0%3C/text%3E%3Ctext x='60' y='65' font-family='serif' font-size='45' font-weight='bold' fill='%23ffffff'%3ED%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
@@ -11,7 +13,6 @@
 </head>
 <body>
 
-  <!-- Capas de atmósfera gótica -->
   <div class="damask-bg"></div>
   <div class="crimson-mist"></div>
   <canvas id="atmosphere-canvas"></canvas>
@@ -19,7 +20,7 @@
   <div class="vignette"></div>
   <div id="cursor-glow" class="cursor-glow"></div>
 
-  <!-- ================= PANTALLA DE LOGIN ================= -->
+  <!-- LOGIN -->
   <section id="login-screen" class="login-wrapper">
     <div class="cathedral-frame login-card">
       <div class="rose-window-bg"></div>
@@ -28,12 +29,9 @@
       <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12 M2,40 Q25,40 25,2 M40,2 Q40,25 2,25" fill="none" stroke="currentColor" stroke-width="2"/></svg>
 
-      <div class="crest-emblem">
-        <span>K</span><span class="crest-cross">†</span><span>D</span>
-      </div>
+      <div class="crest-emblem"><span>K</span><span class="crest-cross">†</span><span>D</span></div>
       <h1 class="gothic-title">Santuario Eterno</h1>
       <p class="subtitle">Solo dos almas poseen la llave de este umbral</p>
-
       <div class="gothic-divider"><span>❖</span></div>
 
       <form id="login-form">
@@ -41,64 +39,45 @@
           <label class="form-label">Elige tu nombre</label>
           <div class="user-selector">
             <input type="radio" name="username" id="user-kevin" value="Kevin" required>
-            <label for="user-kevin" class="user-card-btn">
-              <span class="soul-sigil">♚</span>
-              <span class="soul-name">Kevin</span>
-            </label>
-
+            <label for="user-kevin" class="user-card-btn"><span class="soul-sigil">♚</span><span>Kevin</span></label>
             <input type="radio" name="username" id="user-dominic" value="Dominic" required>
-            <label for="user-dominic" class="user-card-btn">
-              <span class="soul-sigil">♛</span>
-              <span class="soul-name">Dominic</span>
-            </label>
+            <label for="user-dominic" class="user-card-btn"><span class="soul-sigil">♛</span><span>Dominic</span></label>
           </div>
         </div>
-
+        <div class="form-group">
+          <label class="form-label">Modo de acceso</label>
+          <div class="mode-selector">
+            <input type="radio" name="mode" id="mode-editor" value="editor" checked>
+            <label for="mode-editor" class="mode-card-btn"><span class="mode-sigil">✎</span><span>Editor</span><small>Crear y editar contenido</small></label>
+            <input type="radio" name="mode" id="mode-reader" value="reader">
+            <label for="mode-reader" class="mode-card-btn"><span class="mode-sigil">👁</span><span>Lectura</span><small>Solo ver lo preparado</small></label>
+          </div>
+        </div>
         <div class="form-group">
           <label for="password-input" class="form-label">Ingresa la fecha de nuestro comienzo</label>
-          <div class="input-wrapper">
-            <input 
-              type="password" 
-              id="password-input" 
-              placeholder="• • • • • • • •" 
-              autocomplete="off" 
-              required
-            >
-          </div>
+          <input type="password" id="password-input" placeholder="• • • • • • • •" autocomplete="off" required>
         </div>
-
         <p id="login-error" class="error-msg"></p>
-
-        <button type="submit" class="wax-seal-btn">
-          <span>Romper el Sello</span>
-        </button>
+        <button type="submit" class="wax-seal-btn"><span>Romper el Sello</span></button>
       </form>
     </div>
   </section>
 
-  <!-- ================= APLICACIÓN PRINCIPAL ================= -->
+  <!-- APP -->
   <div id="main-app" class="hidden">
-    
-    <!-- Barra de Navegación Superior -->
     <header class="navbar">
       <div class="nav-left">
-        <div class="brand-monogram" onclick="switchTab('inicio')">
-          <span>K</span><small>†</small><span>D</span>
-        </div>
-        <div class="user-status">
-          <span class="pulse-dot"></span>
-          <span id="welcome-user"></span>
-        </div>
+        <div class="brand-monogram" onclick="switchTab('inicio')"><span>K</span><small>†</small><span>D</span></div>
+        <button id="back-btn" class="nav-back-btn" onclick="goBack()" title="Volver atrás">◀ Atrás</button>
+        <div class="user-status"><span class="pulse-dot"></span><span id="welcome-user"></span></div>
+        <div id="profile-badge" class="profile-badge"><span class="dot"></span><span id="profile-mode-label"></span></div>
+        <div id="mode-indicator" class="mode-badge editor"><span id="mode-indicator-text">Editor</span></div>
       </div>
-
-      <button id="mobile-menu-btn" class="mobile-toggle" aria-label="Menú">
-        <span></span><span></span><span></span>
-      </button>
-
+      <button id="mobile-menu-btn" class="mobile-toggle" aria-label="Menú"><span></span><span></span><span></span></button>
       <nav id="nav-links" class="nav-links">
         <button class="nav-btn active" data-target="inicio">Inicio</button>
-
-        <!-- Desplegable 1: Memorias -->
+        <button class="nav-btn" data-target="perfiles">Perfiles</button>
+        <button class="nav-btn" data-target="chat">Chat</button>
         <div class="nav-dropdown">
           <button class="nav-btn dropdown-trigger">Memorias ▾</button>
           <div class="dropdown-menu">
@@ -110,21 +89,17 @@
             <button class="nav-btn" data-target="videos">Videos</button>
           </div>
         </div>
-
-        <!-- Desplegable 2: Devoción -->
         <div class="nav-dropdown">
           <button class="nav-btn dropdown-trigger">Devoción ▾</button>
           <div class="dropdown-menu">
             <button class="nav-btn" data-target="razones">Razones para Amarte</button>
-            <button class="nav-btn" data-target="admiro">Cosas que Admiro de Ti</button>
+            <button class="nav-btn" data-target="admiro">Cosas que Admiro y Me Gustan de Ti</button>
             <button class="nav-btn" data-target="agradecimientos">Agradecimientos</button>
             <button class="nav-btn" data-target="recuerdan">Me Recuerdan a Ti</button>
             <button class="nav-btn" data-target="parejas">Parejas a las que nos Parecemos</button>
-            <button class="nav-btn" data-target="carta">Mi Carta</button>
+            <button class="nav-btn" data-target="carta">Cartas</button>
           </div>
         </div>
-
-        <!-- Desplegable 3: Universo & Archivos -->
         <div class="nav-dropdown">
           <button class="nav-btn dropdown-trigger">Universo ▾</button>
           <div class="dropdown-menu">
@@ -134,22 +109,11 @@
             <button class="nav-btn" data-target="celebraciones">Celebraciones Importantes</button>
             <button class="nav-btn" data-target="planes">Planes a Futuro</button>
             <button class="nav-btn" data-target="canciones">Nuestras Canciones</button>
+            <button class="nav-btn" data-target="sorpresas">Sorpresas</button>
           </div>
         </div>
-
-        <!-- Desplegable 4: Juegos -->
-        <div class="nav-dropdown">
-          <button class="nav-btn dropdown-trigger">Juegos ▾</button>
-          <div class="dropdown-menu">
-            <button class="nav-btn" data-target="sopa">Sopa de Letras</button>
-            <button class="nav-btn" data-target="buscaminas">Buscaminas Romántico</button>
-            <button class="nav-btn" data-target="laberinto">Laberinto del Amor</button>
-            <button class="nav-btn" data-target="quiz">Quiz del Amor (20)</button>
-          </div>
-        </div>
-
+        <button class="nav-btn" data-target="juegos-menu" onclick="openGamesArcade()">Juegos</button>
         <button class="nav-btn" data-target="tiempo">Tiempo</button>
-        <button class="nav-btn" data-target="sorpresa">Sorpresa</button>
         <button class="nav-btn emergency-nav-btn" onclick="triggerLoveEmergency()">♥ Emergencia</button>
         <button id="logout-btn" class="nav-btn logout">Cerrar</button>
       </nav>
@@ -157,7 +121,7 @@
 
     <main class="container">
 
-      <!-- ================= 1. INICIO ================= -->
+      <!-- INICIO -->
       <section id="inicio" class="tab-section active">
         <div class="cathedral-frame hero-banner">
           <div class="rose-window-bg"></div>
@@ -165,837 +129,488 @@
           <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-
           <div class="hero-crown">† ✦ ♛ ✦ †</div>
           <h2 class="hero-quote">"Acá guardo con amor nuestros recuerdos"</h2>
           <p class="hero-sub">Un altar digital esculpido en sombras y carmesí para inmortalizar cada instante entre Kevin y Dominic.</p>
-
-          <!-- Botón de Mensajes Amorosos de Emergencia -->
           <div class="emergency-hero-wrap">
             <button class="btn-emergency-main" onclick="triggerLoveEmergency()">
               <span class="heart-beat">♥</span> Mensajes Amorosos de Emergencia <span class="heart-beat">♥</span>
             </button>
           </div>
-
           <div class="gothic-divider"><span>❖</span></div>
-
-          <!-- Portal completo con TODOS los apartados -->
           <div class="sanctuary-grid">
-            <article class="portal-card" onclick="switchTab('constelaciones')">
-              <div class="portal-arch">✧</div>
-              <div class="portal-content">
-                <h3>Mapa de Constelaciones</h3>
-                <p>El firmamento trazando nuestro avance desde el 27 de enero.</p>
-                <span class="portal-cta">Contemplar estrellas ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('tabla-periodica')">
-              <div class="portal-arch">⚗</div>
-              <div class="portal-content">
-                <h3>Tabla Periódica del Amor</h3>
-                <p>Los elementos químicos que componen nuestra alma.</p>
-                <span class="portal-cta">Explorar elementos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('expediente')">
-              <div class="portal-arch">📁</div>
-              <div class="portal-content">
-                <h3>Expediente Secreto</h3>
-                <p>Archivo confidencial: por qué somos la mejor pareja.</p>
-                <span class="portal-cta">Abrir carpeta ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('celebraciones')">
-              <div class="portal-arch">🕯</div>
-              <div class="portal-content">
-                <h3>Celebraciones Importantes</h3>
-                <p>Aniversario, cumpleaños, flores amarillas, Halloween y Navidad.</p>
-                <span class="portal-cta">Ver calendario ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('recuerdos')">
-              <div class="portal-arch">📜</div>
-              <div class="portal-content">
-                <h3>Recuerdos Especiales</h3>
-                <p>Crónicas desplegables de nuestros momentos más sagrados.</p>
-                <span class="portal-cta">Abrir pergaminos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('nunca-olvidar')">
-              <div class="portal-arch">⏳</div>
-              <div class="portal-content">
-                <h3>Nunca Quiero Olvidar</h3>
-                <p>Memorias grabadas a fuego contra el paso del tiempo.</p>
-                <span class="portal-cta">Entrar al archivo ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('logros')">
-              <div class="portal-arch">🏆</div>
-              <div class="portal-content">
-                <h3>Nuestros Logros Juntos</h3>
-                <p>Cada obstáculo vencido y cada victoria compartida.</p>
-                <span class="portal-cta">Ver trofeos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('admiro')">
-              <div class="portal-arch">♛</div>
-              <div class="portal-content">
-                <h3>Cosas que Admiro de Ti</h3>
-                <p>Tu fuerza, tu mente, tu esencia y todo lo que eres.</p>
-                <span class="portal-cta">Leer tributo ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('agradecimientos')">
-              <div class="portal-arch">✞</div>
-              <div class="portal-content">
-                <h3>Agradecimientos</h3>
-                <p>Gracias por todo lo que haces por mí cada día.</p>
-                <span class="portal-cta">Ver gratitud ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('parejas')">
-              <div class="portal-arch">❧</div>
-              <div class="portal-content">
-                <h3>Parejas a las que nos Parecemos</h3>
-                <p>Dúos icónicos que reflejan nuestra complicidad.</p>
-                <span class="portal-cta">Descubrir dúos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('salidas')">
-              <div class="portal-arch">✦</div>
-              <div class="portal-content">
-                <h3>Nuestras Salidas</h3>
-                <p>Lugares, citas y noches donde el mundo se detuvo.</p>
-                <span class="portal-cta">Explorar bitácora ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('planes')">
-              <div class="portal-arch">🗝</div>
-              <div class="portal-content">
-                <h3>Planes a Futuro</h3>
-                <p>Promesas, sueños y destinos que conquistaremos juntos.</p>
-                <span class="portal-cta">Ver juramentos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('razones')">
-              <div class="portal-arch">♥</div>
-              <div class="portal-content">
-                <h3>Razones por las que te Amo</h3>
-                <p>Cada motivo por el cual mi alma te elige cada día.</p>
-                <span class="portal-cta">Descubrir razones ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('recuerdan')">
-              <div class="portal-arch">🥀</div>
-              <div class="portal-content">
-                <h3>Me Recuerdan a Ti</h3>
-                <p>Detalles, aromas, canciones y señales que llevan tu nombre.</p>
-                <span class="portal-cta">Ver gabinete ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('buscaminas')">
-              <div class="portal-arch">💣</div>
-              <div class="portal-content">
-                <h3>Buscaminas Romántico</h3>
-                <p>Si detonas una bomba, deberás cumplir un reto de amor.</p>
-                <span class="portal-cta">Jugar buscaminas ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('laberinto')">
-              <div class="portal-arch">❖</div>
-              <div class="portal-content">
-                <h3>Laberinto del Amor</h3>
-                <p>Guía a Kevin hasta Dominic a través de los muros oscuros.</p>
-                <span class="portal-cta">Cruzar laberinto ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('sopa')">
-              <div class="portal-arch">🔍</div>
-              <div class="portal-content">
-                <h3>Sopa de Letras</h3>
-                <p>Encuentra nuestras fechas y palabras ocultas en el tablero.</p>
-                <span class="portal-cta">Jugar ahora ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('quiz')">
-              <div class="portal-arch">?</div>
-              <div class="portal-content">
-                <h3>Quiz de Nuestra Historia</h3>
-                <p>20 preguntas para poner a prueba cuánto nos conocemos.</p>
-                <span class="portal-cta">Iniciar desafío ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('fotos')">
-              <div class="portal-arch">🖼</div>
-              <div class="portal-content">
-                <h3>Nuestras Fotos</h3>
-                <p>Retratos y momentos detenidos en la eternidad.</p>
-                <span class="portal-cta">Entrar a la galería ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('videos')">
-              <div class="portal-arch">▶</div>
-              <div class="portal-content">
-                <h3>Nuestros Videos</h3>
-                <p>Memorias vivas y escenas que jamás se borrarán.</p>
-                <span class="portal-cta">Reproducir recuerdos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('canciones')">
-              <div class="portal-arch">♫</div>
-              <div class="portal-content">
-                <h3>Nuestras Canciones</h3>
-                <p>Las melodías de Spotify que narran nuestra historia.</p>
-                <span class="portal-cta">Escuchar himnos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('tiempo')">
-              <div class="portal-arch">⧗</div>
-              <div class="portal-content">
-                <h3>Nuestro Tiempo</h3>
-                <p>Reloj perpetuo desde el 27 de enero de 2026.</p>
-                <span class="portal-cta">Contemplar latidos ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card" onclick="switchTab('carta')">
-              <div class="portal-arch">✒</div>
-              <div class="portal-content">
-                <h3>Mi Carta</h3>
-                <p>Confesiones escritas con tinta y devoción.</p>
-                <span class="portal-cta">Abrir pergamino ⟶</span>
-              </div>
-            </article>
-
-            <article class="portal-card royal-card" onclick="switchTab('sorpresa')">
-              <div class="portal-arch">♛</div>
-              <div class="portal-content">
-                <h3>Otra Sorpresa</h3>
-                <p>Un relicario secreto aguardando al final del camino.</p>
-                <span class="portal-cta">Revelar secreto ⟶</span>
-              </div>
-            </article>
+            <article class="portal-card" onclick="switchTab('perfiles')"><div class="portal-arch"><span class="portal-glyph">♛</span></div><div class="portal-content"><h3>Perfiles del Santuario</h3><p>Los altares personales de Kevin y Dominic.</p><span class="portal-cta">Ver altares ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('chat')"><div class="portal-arch"><span class="portal-glyph">✉</span></div><div class="portal-content"><h3>Chat del Santuario</h3><p>Conversación entre Kevin y Dominic.</p><span class="portal-cta">Abrir chat ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('constelaciones')"><div class="portal-arch"><span class="portal-glyph">✧</span></div><div class="portal-content"><h3>Mapa de Constelaciones</h3><p>Firmamento real animado.</p><span class="portal-cta">Contemplar estrellas ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('tabla-periodica')"><div class="portal-arch"><span class="portal-glyph">⚗</span></div><div class="portal-content"><h3>Tabla Periódica del Amor</h3><p>118 elementos de nuestra alma.</p><span class="portal-cta">Explorar ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('expediente')"><div class="portal-arch"><span class="portal-glyph">❒</span></div><div class="portal-content"><h3>Expediente Secreto</h3><p>Archivo confidencial.</p><span class="portal-cta">Abrir ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('celebraciones')"><div class="portal-arch"><span class="portal-glyph">✠</span></div><div class="portal-content"><h3>Celebraciones Importantes</h3><p>Fechas sagradas del año.</p><span class="portal-cta">Ver calendario ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('recuerdos')"><div class="portal-arch"><span class="portal-glyph">⚜</span></div><div class="portal-content"><h3>Recuerdos Especiales</h3><p>Crónicas de nuestros momentos.</p><span class="portal-cta">Abrir ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('nunca-olvidar')"><div class="portal-arch"><span class="portal-glyph">✣</span></div><div class="portal-content"><h3>Nunca Quiero Olvidar</h3><p>Memorias grabadas a fuego.</p><span class="portal-cta">Entrar ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('logros')"><div class="portal-arch"><span class="portal-glyph">♔</span></div><div class="portal-content"><h3>Nuestros Logros Juntos</h3><p>Cada victoria compartida.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('admiro')"><div class="portal-arch"><span class="portal-glyph">♛</span></div><div class="portal-content"><h3>Cosas que Admiro y Me Gustan</h3><p>Virtudes y detalles que me encantan.</p><span class="portal-cta">Leer ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('agradecimientos')"><div class="portal-arch"><span class="portal-glyph">✞</span></div><div class="portal-content"><h3>Agradecimientos</h3><p>Gracias por todo.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('parejas')"><div class="portal-arch"><span class="portal-glyph">❧</span></div><div class="portal-content"><h3>Parejas a las que nos Parecemos</h3><p>Dúos icónicos.</p><span class="portal-cta">Descubrir ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('salidas')"><div class="portal-arch"><span class="portal-glyph">✠</span></div><div class="portal-content"><h3>Nuestras Salidas</h3><p>Lugares y noches juntos.</p><span class="portal-cta">Explorar ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('planes')"><div class="portal-arch"><span class="portal-glyph">✩</span></div><div class="portal-content"><h3>Planes a Futuro</h3><p>Sueños juntos.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('razones')"><div class="portal-arch"><span class="portal-glyph">♥</span></div><div class="portal-content"><h3>Razones para Amarte</h3><p>Motivos de mi amor.</p><span class="portal-cta">Descubrir ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('recuerdan')"><div class="portal-arch"><span class="portal-glyph">✿</span></div><div class="portal-content"><h3>Me Recuerdan a Ti</h3><p>Detalles del mundo.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('fotos')"><div class="portal-arch"><span class="portal-glyph">❑</span></div><div class="portal-content"><h3>Nuestras Fotos</h3><p>Hasta 1000 fotos editables.</p><span class="portal-cta">Galería ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('videos')"><div class="portal-arch"><span class="portal-glyph">▷</span></div><div class="portal-content"><h3>Nuestros Videos</h3><p>Hasta 1000 videos editables.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('canciones')"><div class="portal-arch"><span class="portal-glyph">♫</span></div><div class="portal-content"><h3>Nuestras Canciones</h3><p>Hasta 500 canciones de Spotify.</p><span class="portal-cta">Escuchar ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('sorpresas')"><div class="portal-arch"><span class="portal-glyph">✦</span></div><div class="portal-content"><h3>Sorpresas</h3><p>Links a Canva, YouTube, TikTok.</p><span class="portal-cta">Abrir ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('tiempo')"><div class="portal-arch"><span class="portal-glyph">⧗</span></div><div class="portal-content"><h3>Nuestro Tiempo</h3><p>Reloj perpetuo.</p><span class="portal-cta">Ver ⟶</span></div></article>
+            <article class="portal-card" onclick="switchTab('carta')"><div class="portal-arch"><span class="portal-glyph">✒</span></div><div class="portal-content"><h3>Cartas</h3><p>Confesiones con devoción.</p><span class="portal-cta">Abrir ⟶</span></div></article>
+            <article class="portal-card royal-card" onclick="openGamesArcade()"><div class="portal-arch"><span class="portal-glyph">❖</span></div><div class="portal-content"><h3>Sala de Juegos</h3><p>29 juegos para jugar y enamorarse.</p><span class="portal-cta">Jugar ahora ⟶</span></div></article>
           </div>
         </div>
       </section>
 
-      <!-- ================= TABLA PERIÓDICA DEL AMOR ================= -->
-      <section id="tabla-periodica" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">⚗ ✦ ⚗</span>
-          <h2 class="gothic-title">Tabla Periódica de Nuestro Amor</h2>
-          <p class="subtitle">Haz clic en cualquier elemento para revelar su composición emocional</p>
-        </div>
+      <!-- PERFILES -->
+      <section id="perfiles" class="tab-section">
+        <div class="section-header"><span class="header-sigil">♛ ✦ ♚</span><h2 class="gothic-title">Altar de los Perfiles</h2><p class="subtitle">Los altares personales de Kevin y Dominic</p></div>
+        <div id="profile-context-banner" class="profile-context-banner"></div>
+        <div id="profiles-grid" class="profiles-grid"></div>
+      </section>
 
+      <!-- CHAT -->
+      <section id="chat" class="tab-section">
+        <div class="section-header"><span class="header-sigil">✉ ✦ ✉</span><h2 class="gothic-title">Chat del Santuario</h2><p class="subtitle">Conversación eterna entre Kevin y Dominic</p></div>
+        <div class="cathedral-frame chat-container">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:0.5rem;"><button type="button" class="btn-outline" style="font-size:0.75rem;padding:0.4rem 0.8rem;" onclick="clearChat()">✕ Vaciar Chat</button></div>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-attach-bar">
+            <button type="button" class="chat-attach-btn" onclick="document.getElementById('chat-photo-input').click()" title="Enviar foto">❑</button>
+            <button type="button" class="chat-attach-btn" onclick="document.getElementById('chat-video-input').click()" title="Enviar video">▷</button>
+            <button type="button" class="chat-attach-btn" onclick="document.getElementById('chat-audio-input').click()" title="Enviar audio">♫</button>
+            <button type="button" class="chat-attach-btn" onclick="document.getElementById('chat-file-input').click()" title="Enviar documento">❒</button>
+            <button type="button" class="chat-attach-btn" id="chat-voice-btn" onclick="toggleVoiceRecording()" title="Nota de voz">🎤</button>
+            <input type="file" id="chat-photo-input" accept="image/*" style="display:none;">
+            <input type="file" id="chat-video-input" accept="video/*" style="display:none;">
+            <input type="file" id="chat-audio-input" accept="audio/*" style="display:none;">
+            <input type="file" id="chat-file-input" style="display:none;">
+          </div>
+          <form id="chat-form" class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
+            <button type="submit" class="btn-crimson">Enviar</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TABLA PERIÓDICA -->
+      <section id="tabla-periodica" class="tab-section">
+        <div class="section-header"><span class="header-sigil">⚗ ✦ ⚗</span><h2 class="gothic-title">Tabla Periódica del Amor</h2><p class="subtitle">118 elementos con conceptos de amor</p></div>
         <div class="cathedral-frame">
           <div id="periodic-detail-banner" class="periodic-banner">
-            <span id="pt-selected-symbol" class="pt-big-symbol">Kd</span>
-            <div class="pt-banner-info">
-              <h3 id="pt-selected-name">Kevin & Dominic (Elemento Primordial)</h3>
-              <p id="pt-selected-desc">El enlace atómico más estable y poderoso del universo, formado el 27 de enero de 2026.</p>
-            </div>
+            <span id="pt-selected-symbol" class="pt-big-symbol">Am</span>
+            <div class="pt-banner-info"><h3 id="pt-selected-name">Amor Primordial (N.º 1)</h3><p id="pt-selected-desc">Selecciona un elemento.</p></div>
           </div>
-
           <div id="periodic-grid" class="periodic-grid"></div>
         </div>
       </section>
 
-      <!-- ================= EXPEDIENTE SECRETO (ESTILO DETECTIVE) ================= -->
+      <!-- EXPEDIENTE -->
       <section id="expediente" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">📁 ✦ 📁</span>
-          <h2 class="gothic-title">Expediente Confidencial: Caso K†D</h2>
-          <p class="subtitle">Archivo clasificado de inteligencia romántica — Nivel de acceso: Máximo</p>
-        </div>
-
-        <div class="cathedral-frame dossier-folder">
-          <div class="dossier-top-meta">
-            <div>
-              <p class="dossier-code">CASO N.º: 27-01-2026-ETERNAL</p>
-              <p class="dossier-code">SUJETOS: KEVIN & DOMINIC</p>
-              <p class="dossier-code">VEREDICTO: LA MEJOR PAREJA DOCUMENTADA</p>
-            </div>
-            <div class="classified-stamp">TOP SECRET // CONFIDENCIAL</div>
-          </div>
-
-          <div class="gothic-divider"><span>❖</span></div>
-
+        <div class="section-header"><span class="header-sigil">❒ ✦ ❒</span><h2 class="gothic-title">Expediente Confidencial</h2><p class="subtitle">Archivo clasificado</p></div>
+        <div id="expediente-context"></div>
+        <div class="cathedral-frame">
           <div class="form-panel compact-panel">
             <form id="form-evidencia" class="inline-add-form">
-              <input type="text" id="evidencia-texto" placeholder="Añadir nueva prueba o motivo al expediente..." required>
-              <button type="submit" class="btn-crimson">Archivar Prueba</button>
+              <input type="text" id="evidencia-texto" placeholder="Añadir prueba o motivo..." required>
+              <button type="submit" class="btn-crimson">Archivar</button>
             </form>
           </div>
-
           <div id="dossier-evidence-list" class="dossier-grid"></div>
         </div>
       </section>
 
-      <!-- ================= MAPA DE CONSTELACIONES ================= -->
+      <!-- CONSTELACIONES -->
       <section id="constelaciones" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">✧ ✦ ✧</span>
-          <h2 class="gothic-title">Mapa de Nuestras Constelaciones</h2>
-          <p class="subtitle">El trazado celestial de cada mes y estrella encendida desde el 27 de enero de 2026 hasta hoy</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✧ ✦ ✧</span><h2 class="gothic-title">Mapa de Constelaciones</h2><p class="subtitle">Firmamento real animado con nuestras celebraciones como estrellas</p></div>
         <div class="cathedral-frame constellation-box">
           <div class="constellation-canvas-wrap">
-            <canvas id="constellation-canvas" width="900" height="440"></canvas>
+            <canvas id="constellation-canvas"></canvas>
+            <div class="constellation-legend">★ Celebraciones ✦ Constelaciones reales</div>
           </div>
           <div id="constellation-info-card" class="constellation-readout">
-            <span class="date-tag" id="star-date">27 de Enero, 2026</span>
-            <h3 class="card-title" id="star-title">Estrella Alfa: El Origen</h3>
-            <p class="card-desc" id="star-desc">Haz clic sobre cualquier estrella brillante en el mapa celeste para leer la historia de ese hito en nuestra constelación.</p>
+            <span class="date-tag" id="star-date">—</span>
+            <h3 class="card-title" id="star-title">Selecciona una estrella</h3>
+            <p class="card-desc" id="star-desc">Haz clic en una estrella brillante.</p>
           </div>
         </div>
       </section>
 
-      <!-- ================= COSAS QUE ADMIRO DE TI ================= -->
+      <!-- ADMIRO (renamed) -->
       <section id="admiro" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">♛ ✦ ♛</span>
-          <h2 class="gothic-title">Cosas que Admiro de Ti</h2>
-          <p class="subtitle">Virtudes, fortalezas y rasgos de tu alma que me inspiran cada día</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">♛ ✦ ♛</span><h2 class="gothic-title">Cosas que Admiro y Me Gustan de Ti</h2><p class="subtitle">Virtudes y detalles que me encantan</p></div>
+        <div id="admiro-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-admiro" class="gothic-form-grid">
-            <input type="text" id="admiro-titulo" placeholder="Cualidad o virtud que admiro..." required>
-            <input type="text" id="admiro-detalle" placeholder="¿Por qué me inspira tanto?" required>
-            <button type="submit" class="btn-crimson">Añadir a tu Altar</button>
+            <input type="text" id="admiro-titulo" placeholder="Cualidad o detalle..." required>
+            <input type="text" id="admiro-detalle" placeholder="¿Por qué te gusta/admiras?" required>
+            <button type="submit" class="btn-crimson">Añadir</button>
           </form>
         </div>
-
         <div id="admiro-grid" class="reasons-grid"></div>
       </section>
 
-      <!-- ================= AGRADECIMIENTOS ================= -->
+      <!-- AGRADECIMIENTOS -->
       <section id="agradecimientos" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">✞ ✦ ✞</span>
-          <h2 class="gothic-title">Agradecimientos Eternos</h2>
-          <p class="subtitle">Por cada gesto, sacrificio, paciencia y detalle que haces por mí</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✞ ✦ ✞</span><h2 class="gothic-title">Agradecimientos Eternos</h2><p class="subtitle">Por cada gesto y detalle</p></div>
+        <div id="gracias-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-gracias" class="inline-add-form">
-            <input type="text" id="gracias-texto" placeholder="Escribe algo que quieras agradecerle hoy..." required>
-            <button type="submit" class="btn-crimson">Guardar Gratitud</button>
+            <input type="text" id="gracias-texto" placeholder="Escribe algo que agradecer..." required>
+            <button type="submit" class="btn-crimson">Guardar</button>
           </form>
         </div>
-
         <div id="gracias-grid" class="curiosities-grid"></div>
       </section>
 
-      <!-- ================= PAREJAS A LAS QUE NOS PARECEMOS ================= -->
+      <!-- PAREJAS -->
       <section id="parejas" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">❧ ✦ ❧</span>
-          <h2 class="gothic-title">Parejas a las que nos Parecemos</h2>
-          <p class="subtitle">Dúos legendarios cuya química, lealtad y complicidad reflejan lo nuestro</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">❧ ✦ ❧</span><h2 class="gothic-title">Parejas a las que nos Parecemos</h2><p class="subtitle">Dúos legendarios</p></div>
+        <div id="parejas-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-pareja" class="gothic-form-grid">
-            <input type="text" id="pareja-nombres" placeholder="Nombres de la pareja (ej. Morticia & Gómez Addams)" required>
-            <input type="text" id="pareja-origen" placeholder="Serie, película, juego o historia..." required>
-            <textarea id="pareja-motivo" rows="2" placeholder="¿En qué nos parecemos a ellos?" required></textarea>
-            <button type="submit" class="btn-crimson">Registrar Dúo</button>
+            <input type="text" id="pareja-nombres" placeholder="Nombres..." required>
+            <input type="text" id="pareja-origen" placeholder="Serie/película..." required>
+            <textarea id="pareja-motivo" rows="2" placeholder="¿En qué nos parecemos?" required></textarea>
+            <button type="submit" class="btn-crimson">Registrar</button>
           </form>
         </div>
-
         <div id="parejas-grid" class="timeline-grid"></div>
       </section>
 
-      <!-- ================= CELEBRACIONES IMPORTANTES ================= -->
+      <!-- CELEBRACIONES -->
       <section id="celebraciones" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">🕯 ✦ 🕯</span>
-          <h2 class="gothic-title">Celebraciones Importantes</h2>
-          <p class="subtitle">Nuestras fechas sagradas del año y la cuenta regresiva hacia cada una</p>
+        <div class="section-header"><span class="header-sigil">✠ ✦ ✠</span><h2 class="gothic-title">Celebraciones Importantes</h2><p class="subtitle">Añade tus fechas sagradas</p></div>
+        <div id="celebraciones-context"></div>
+        <div class="cathedral-frame">
+          <h3 class="panel-heading">Añadir Celebración</h3>
+          <form id="form-celebracion" class="celebration-add-form">
+            <input type="text" id="celebracion-nombre" placeholder="Nombre..." required>
+            <input type="text" id="celebracion-icono" placeholder="Símbolo (ej. ✠)">
+            <select id="celebracion-mes" required>
+              <option value="">Mes...</option>
+              <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+              <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+              <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+              <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+            </select>
+            <input type="number" id="celebracion-dia" placeholder="Día (1-31)" min="1" max="31" required>
+            <input type="text" id="celebracion-fecha-texto" placeholder="Texto de fecha" required>
+            <textarea id="celebracion-desc" class="form-full-row" rows="2" placeholder="Descripción..." required></textarea>
+            <button type="submit" class="btn-crimson">Añadir</button>
+          </form>
         </div>
-
         <div id="celebraciones-grid" class="celebrations-grid"></div>
       </section>
 
-      <!-- ================= COSAS QUE NUNCA QUIERO OLVIDAR ================= -->
+      <!-- NUNCA OLVIDAR -->
       <section id="nunca-olvidar" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">⏳ ✦ ⏳</span>
-          <h2 class="gothic-title">Cosas que Nunca Quiero Olvidar</h2>
-          <p class="subtitle">Instantes, frases, miradas y promesas protegidas contra el olvido</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✣ ✦ ✣</span><h2 class="gothic-title">Cosas que Nunca Quiero Olvidar</h2><p class="subtitle">Instantes protegidos</p></div>
+        <div id="nunca-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-nunca" class="inline-add-form">
-            <input type="text" id="nunca-texto" placeholder="Escribe un detalle o momento que jamás quieras olvidar..." required>
-            <button type="submit" class="btn-crimson">Grabar en Piedra</button>
+            <input type="text" id="nunca-texto" placeholder="Detalle que jamás quieras olvidar..." required>
+            <button type="submit" class="btn-crimson">Grabar</button>
           </form>
         </div>
-
         <div id="nunca-grid" class="reasons-grid"></div>
       </section>
 
-      <!-- ================= NUESTROS LOGROS JUNTOS ================= -->
+      <!-- LOGROS -->
       <section id="logros" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">🏆 ✦ 🏆</span>
-          <h2 class="gothic-title">Nuestros Logros Juntos</h2>
-          <p class="subtitle">Trofeos desbloqueados en nuestra historia de amor</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">♔ ✦ ♔</span><h2 class="gothic-title">Nuestros Logros Juntos</h2><p class="subtitle">Trofeos desbloqueados</p></div>
+        <div id="logros-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-logro" class="gothic-form-grid">
-            <input type="text" id="logro-titulo" placeholder="Título del logro desbloqueado..." required>
-            <input type="text" id="logro-fecha" placeholder="Fecha o etapa..." required>
-            <textarea id="logro-desc" rows="2" placeholder="Descripción de este logro juntos..." required></textarea>
-            <button type="submit" class="btn-crimson">Desbloquear Logro</button>
+            <input type="text" id="logro-titulo" placeholder="Título..." required>
+            <input type="text" id="logro-fecha" placeholder="Fecha..." required>
+            <textarea id="logro-desc" rows="2" placeholder="Descripción..." required></textarea>
+            <button type="submit" class="btn-crimson">Desbloquear</button>
           </form>
         </div>
-
         <div id="logros-grid" class="timeline-grid"></div>
       </section>
 
-      <!-- ================= RECUERDOS DE MOMENTOS ESPECIALES (DESPLEGABLES) ================= -->
+      <!-- RECUERDOS -->
       <section id="recuerdos" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">📜 ✦ 📜</span>
-          <h2 class="gothic-title">Recuerdos de Momentos Especiales</h2>
-          <p class="subtitle">Haz clic en cada título para desplegar su historia o guarda nuevos recuerdos eternos</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">⚜ ✦ ⚜</span><h2 class="gothic-title">Recuerdos Especiales</h2><p class="subtitle">Crónicas desplegables</p></div>
+        <div id="recuerdos-context"></div>
         <div class="cathedral-frame form-panel">
-          <h3 class="panel-heading">Añadir Nuevo Recuerdo</h3>
           <form id="form-recuerdo" class="gothic-form-grid">
-            <input type="text" id="recuerdo-titulo" placeholder="Título del momento especial..." required>
-            <input type="text" id="recuerdo-fecha" placeholder="Fecha (ej. 27 de Enero, 2026)" required>
-            <textarea id="recuerdo-texto" rows="3" placeholder="Escribe aquí toda la historia, lo que sentimos y lo que pasó..." required></textarea>
-            <button type="submit" class="btn-crimson">Sellar Recuerdo</button>
+            <input type="text" id="recuerdo-titulo" placeholder="Título..." required>
+            <input type="text" id="recuerdo-fecha" placeholder="Fecha..." required>
+            <textarea id="recuerdo-texto" rows="3" placeholder="Historia..." required></textarea>
+            <button type="submit" class="btn-crimson">Sellar</button>
           </form>
         </div>
-
         <div id="recuerdos-accordion" class="accordion-list"></div>
       </section>
 
-      <!-- ================= NUESTRAS SALIDAS ================= -->
+      <!-- SALIDAS -->
       <section id="salidas" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">🕯 ✦ 🕯</span>
-          <h2 class="gothic-title">Nuestras Salidas</h2>
-          <p class="subtitle">Bitácora de nuestros encuentros, lugares recorridos y aventuras juntos</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✠ ✦ ✠</span><h2 class="gothic-title">Nuestras Salidas</h2><p class="subtitle">Bitácora de encuentros</p></div>
+        <div id="salidas-context"></div>
         <div class="cathedral-frame form-panel">
-          <h3 class="panel-heading">Registrar Nueva Salida</h3>
           <form id="form-salida" class="gothic-form-grid">
-            <input type="text" id="salida-lugar" placeholder="Lugar o título de la cita..." required>
-            <input type="text" id="salida-fecha" placeholder="Fecha (ej. 14 de Febrero, 2026)" required>
-            <textarea id="salida-desc" rows="2" placeholder="¿Qué hicimos? ¿Qué fue lo mejor de esa salida?" required></textarea>
-            <button type="submit" class="btn-crimson">Guardar Salida</button>
+            <input type="text" id="salida-lugar" placeholder="Lugar..." required>
+            <input type="text" id="salida-fecha" placeholder="Fecha..." required>
+            <textarea id="salida-desc" rows="2" placeholder="¿Qué hicimos?" required></textarea>
+            <button type="submit" class="btn-crimson">Guardar</button>
           </form>
         </div>
-
         <div id="salidas-grid" class="timeline-grid"></div>
       </section>
 
-      <!-- ================= NUESTROS PLANES A FUTURO ================= -->
+      <!-- PLANES -->
       <section id="planes" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">✦ ♛ ✦</span>
-          <h2 class="gothic-title">Nuestros Planes a Futuro</h2>
-          <p class="subtitle">Metas, viajes y sueños que cumpliremos de la mano (haz clic para marcar cumplidos)</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✩ ♛ ✩</span><h2 class="gothic-title">Planes a Futuro</h2><p class="subtitle">Metas y sueños (clic para marcar)</p></div>
+        <div id="planes-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-plan" class="inline-add-form">
-            <input type="text" id="plan-texto" placeholder="Escribe un nuevo plan o sueño juntos..." required>
-            <button type="submit" class="btn-crimson">Añadir Plan</button>
+            <input type="text" id="plan-texto" placeholder="Nuevo plan..." required>
+            <button type="submit" class="btn-crimson">Añadir</button>
           </form>
         </div>
-
         <div id="planes-list" class="plans-grid"></div>
       </section>
 
-      <!-- ================= RAZONES POR LAS QUE TE AMO ================= -->
+      <!-- RAZONES -->
       <section id="razones" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">♥ ✦ ♥</span>
-          <h2 class="gothic-title">Razones por las que te Amo</h2>
-          <p class="subtitle">Aunque faltaría eternidad para enumerarlas todas, aquí viven las más profundas</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">♥ ✦ ♥</span><h2 class="gothic-title">Razones para Amarte</h2><p class="subtitle">Motivos de mi amor</p></div>
+        <div id="razones-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-razon" class="inline-add-form">
-            <input type="text" id="razon-texto" placeholder="Añade una nueva razón por la que lo/la amas..." required>
-            <button type="submit" class="btn-crimson">Inmortalizar Razón</button>
+            <input type="text" id="razon-texto" placeholder="Añade una razón..." required>
+            <button type="submit" class="btn-crimson">Inmortalizar</button>
           </form>
         </div>
-
         <div id="razones-grid" class="reasons-grid"></div>
       </section>
 
-      <!-- ================= COSAS QUE ME RECUERDAN A TI ================= -->
+      <!-- RECUERDAN -->
       <section id="recuerdan" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">🥀 ✦ 🥀</span>
-          <h2 class="gothic-title">Cosas que me Recuerdan a Ti</h2>
-          <p class="subtitle">Pequeños fragmentos del mundo que inevitablemente llevan tu esencia</p>
-        </div>
-
+        <div class="section-header"><span class="header-sigil">✿ ✦ ✿</span><h2 class="gothic-title">Cosas que me Recuerdan a Ti</h2><p class="subtitle">Fragmentos del mundo</p></div>
+        <div id="recuerdan-context"></div>
         <div class="cathedral-frame form-panel">
           <form id="form-recuerda" class="gothic-form-grid">
-            <input type="text" id="recuerda-cosa" placeholder="¿Qué objeto, canción, olor, color o momento es?" required>
-            <input type="text" id="recuerda-categoria" placeholder="Categoría (ej. Música, Aroma, Lugar, Detalle)" required>
-            <textarea id="recuerda-motivo" rows="2" placeholder="¿Por qué me recuerda a ti?" required></textarea>
-            <button type="submit" class="btn-crimson">Guardar en el Relicario</button>
+            <input type="text" id="recuerda-cosa" placeholder="¿Qué cosa?" required>
+            <input type="text" id="recuerda-categoria" placeholder="Categoría" required>
+            <textarea id="recuerda-motivo" rows="2" placeholder="¿Por qué?" required></textarea>
+            <button type="submit" class="btn-crimson">Guardar</button>
           </form>
         </div>
-
         <div id="recuerdan-grid" class="curiosities-grid"></div>
       </section>
 
-      <!-- ================= JUEGO: BUSCAMINAS ROMÁNTICO ================= -->
-      <section id="buscaminas" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">💣 ✦ ♥</span>
-          <h2 class="gothic-title">Buscaminas Romántico</h2>
-          <p class="subtitle">Despeja las casillas seguras. Si detonas una bomba de amor, tendrás que cumplir un reto</p>
-        </div>
+      <!-- JUEGOS EXISTENTES -->
+      <section id="buscaminas" class="tab-section"><div class="section-header"><span class="header-sigil">✸ ✦ ♥</span><h2 class="gothic-title">Buscaminas</h2><p class="subtitle">Detona bombas, cumple retos</p></div><div class="cathedral-frame minesweeper-box"><div class="ms-controls"><span class="quiz-badge">Bombas: 10</span><button type="button" class="btn-crimson" onclick="initMinesweeper()">Nuevo</button></div><div id="minesweeper-grid" class="minesweeper-grid"></div></div></section>
 
-        <div class="cathedral-frame minesweeper-box">
-          <div class="ms-controls">
-            <span class="quiz-badge">Bombas ocultas: 10</span>
-            <button type="button" class="btn-crimson" onclick="initMinesweeper()">Nuevo Tablero</button>
-          </div>
-          <div id="minesweeper-grid" class="minesweeper-grid"></div>
-        </div>
-      </section>
+      <section id="laberinto" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ♥</span><h2 class="gothic-title">Laberinto del Amor</h2><p class="subtitle">Guía a Kevin (♚) hasta Dominic (♛)</p></div><div class="cathedral-frame maze-box"><canvas id="maze-canvas" width="450" height="450"></canvas><div class="maze-controls"><button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0,-1)">▲</button><div class="maze-mid-row"><button type="button" class="maze-dir-btn" onclick="moveMazePlayer(-1,0)">◀</button><button type="button" class="maze-dir-btn" onclick="initMaze()">↻</button><button type="button" class="maze-dir-btn" onclick="moveMazePlayer(1,0)">▶</button></div><button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0,1)">▼</button></div></div></section>
 
-      <!-- ================= JUEGO: LABERINTO DEL AMOR ================= -->
-      <section id="laberinto" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">❖ ✦ ♥</span>
-          <h2 class="gothic-title">Laberinto del Amor</h2>
-          <p class="subtitle">Usa las flechas del teclado (o los botones táctiles) para guiar a Kevin (♚) hasta Dominic (♛)</p>
-        </div>
+      <section id="sopa" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ❖</span><h2 class="gothic-title">Sopa de Letras</h2><p class="subtitle">Encuentra las palabras</p></div><div class="cathedral-frame game-container"><div class="wordsearch-layout"><div id="wordsearch-grid" class="wordsearch-grid"></div><div class="wordsearch-sidebar"><h3 class="panel-heading">Palabras</h3><ul id="wordsearch-list" class="word-list"></ul><p id="wordsearch-status" class="game-status-msg"></p><button type="button" class="btn-crimson" onclick="initWordSearch()">Reiniciar</button></div></div></div></section>
 
-        <div class="cathedral-frame maze-box">
-          <canvas id="maze-canvas" width="450" height="450"></canvas>
-          <div class="maze-controls">
-            <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0, -1)">▲</button>
-            <div class="maze-mid-row">
-              <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(-1, 0)">◀</button>
-              <button type="button" class="maze-dir-btn" onclick="initMaze()">↻</button>
-              <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(1, 0)">▶</button>
-            </div>
-            <button type="button" class="maze-dir-btn" onclick="moveMazePlayer(0, 1)">▼</button>
-          </div>
-        </div>
-      </section>
+      <section id="quiz" class="tab-section"><div class="section-header"><span class="header-sigil">♛ ✦ ♛</span><h2 class="gothic-title">Quiz del Amor</h2><p class="subtitle">20 preguntas</p></div><div class="cathedral-frame quiz-container"><div id="quiz-active-view"><div class="quiz-top-bar"><span id="quiz-progress-text" class="quiz-badge">1 de 20</span><div class="quiz-progress-bar"><div id="quiz-progress-fill" class="quiz-progress-fill"></div></div></div><h3 id="quiz-question-text" class="quiz-question"></h3><div id="quiz-options" class="quiz-options-grid"></div></div><div id="quiz-result-view" class="hidden quiz-result-box"><div class="relic-icon">♛</div><h3 class="gothic-title">Veredicto</h3><p id="quiz-final-message" class="subtitle"></p><div class="score-counters"><div class="score-card"><span id="score-correct" class="score-num">0</span><span class="score-label">Correctas</span></div><div class="score-card"><span id="score-incorrect" class="score-num">0</span><span class="score-label">Incorrectas</span></div></div><button type="button" class="btn-crimson" onclick="restartQuiz()">Reintentar</button></div></div></section>
 
-      <!-- ================= JUEGO: SOPA DE LETRAS ================= -->
-      <section id="sopa" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">❖ ✦ ❖</span>
-          <h2 class="gothic-title">Sopa de Letras Carmesí</h2>
-          <p class="subtitle">Arrastra o haz clic en las letras para encontrar nuestras palabras y fechas secretas</p>
-        </div>
+      <section id="memoria" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ❖</span><h2 class="gothic-title">Memoria Carmesí</h2><p class="subtitle">Encuentra los pares</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Pares</span><br><span class="stat-value" id="mem-pairs">0/8</span></div><div><span class="stat-label">Movimientos</span><br><span class="stat-value" id="mem-moves">0</span></div><button type="button" class="btn-crimson" onclick="initMemory()">Nuevo</button></div><div id="memory-grid" class="memory-grid"></div></div></section>
 
-        <div class="cathedral-frame game-container">
-          <div class="wordsearch-layout">
-            <div id="wordsearch-grid" class="wordsearch-grid"></div>
-            <div class="wordsearch-sidebar">
-              <h3 class="panel-heading">Palabras Ocultas</h3>
-              <ul id="wordsearch-list" class="word-list"></ul>
-              <p id="wordsearch-status" class="game-status-msg"></p>
-              <button type="button" class="btn-crimson" onclick="initWordSearch()">Reiniciar Tablero</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section id="ahorcado" class="tab-section"><div class="section-header"><span class="header-sigil">⚜ ✦ ⚜</span><h2 class="gothic-title">Ahorcado del Amor</h2><p class="subtitle">Adivina la palabra</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Intentos</span><br><span class="stat-value" id="ah-intentos">6</span></div><div><span class="stat-label">Palabra</span><br><span class="stat-value" id="ah-palabra-num">1/8</span></div><button type="button" class="btn-crimson" onclick="initHangman()">Nueva</button></div><div id="ah-figure" class="hangman-figure"></div><div id="ah-display" class="hangman-display">_ _ _</div><div id="ah-letters" class="hangman-letters"></div></div></section>
 
-      <!-- ================= JUEGO: QUIZ DE 20 PREGUNTAS ================= -->
-      <section id="quiz" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">♛ ✦ ♛</span>
-          <h2 class="gothic-title">Oráculo de Nuestro Amor</h2>
-          <p class="subtitle">20 preguntas sobre nosotros. Al final descubrirás cuántas acertaste y cuántas fallaste</p>
-        </div>
+      <section id="tresraya" class="tab-section"><div class="section-header"><span class="header-sigil">✦ ✦ ✦</span><h2 class="gothic-title">Tres en Raya</h2><p class="subtitle">K vs D</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Turno</span><br><span class="stat-value" id="ttt-turno">♚</span></div><div><span class="stat-label">K</span><br><span class="stat-value" id="ttt-k">0</span></div><div><span class="stat-label">D</span><br><span class="stat-value" id="ttt-d">0</span></div><button type="button" class="btn-crimson" onclick="initTicTacToe()">Reiniciar</button></div><div id="ttt-grid" class="tictactoe-grid"></div><p id="ttt-msg" class="game-status-msg" style="margin-top:1.5rem;font-size:1.2rem;"></p></div></section>
 
-        <div class="cathedral-frame quiz-container">
-          <div id="quiz-active-view">
-            <div class="quiz-top-bar">
-              <span id="quiz-progress-text" class="quiz-badge">Pregunta 1 de 20</span>
-              <div class="quiz-progress-bar">
-                <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
-              </div>
-            </div>
+      <section id="conecta4" class="tab-section"><div class="section-header"><span class="header-sigil">❍ ✦ ❍</span><h2 class="gothic-title">Conecta Cuatro</h2><p class="subtitle">Conecta 4 en línea</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Turno</span><br><span class="stat-value" id="c4-turno">K</span></div><button type="button" class="btn-crimson" onclick="initConnect4()">Reiniciar</button></div><div id="c4-grid" class="connect4-grid"></div><p id="c4-msg" class="game-status-msg" style="margin-top:1.5rem;font-size:1.2rem;"></p></div></section>
 
-            <h3 id="quiz-question-text" class="quiz-question"></h3>
-            <div id="quiz-options" class="quiz-options-grid"></div>
-          </div>
+      <section id="simon" class="tab-section"><div class="section-header"><span class="header-sigil">◈ ✦ ◈</span><h2 class="gothic-title">Simón Carmesí</h2><p class="subtitle">Memoriza la secuencia</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Ronda</span><br><span class="stat-value" id="simon-ronda">0</span></div><button type="button" class="btn-crimson" onclick="initSimon()">Empezar</button></div><div id="simon-grid" class="simon-grid"><div class="simon-pad s1" data-pad="0"></div><div class="simon-pad s2" data-pad="1"></div><div class="simon-pad s3" data-pad="2"></div><div class="simon-pad s4" data-pad="3"></div></div><p id="simon-msg" class="game-status-msg" style="margin-top:1.5rem;"></p></div></section>
 
-          <div id="quiz-result-view" class="hidden quiz-result-box">
-            <div class="relic-icon">♛</div>
-            <h3 class="gothic-title">Veredicto del Santuario</h3>
-            <p id="quiz-final-message" class="subtitle"></p>
+      <section id="adivina" class="tab-section"><div class="section-header"><span class="header-sigil">✦ ✦ ✦</span><h2 class="gothic-title">Adivina el Número</h2><p class="subtitle">1 a 100</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Intentos</span><br><span class="stat-value" id="ad-intentos">0</span></div><button type="button" class="btn-crimson" onclick="initAdivina()">Reiniciar</button></div><p id="ad-feedback" class="guess-feedback">Ingresa un número del 1 al 100...</p><div class="guess-input-row"><input type="number" id="ad-input" min="1" max="100" placeholder="Tu número..." style="max-width:200px;"><button type="button" class="btn-crimson" onclick="makeGuess()">Adivinar</button></div></div></section>
 
-            <div class="score-counters">
-              <div class="score-card correct-card">
-                <span id="score-correct" class="score-num">0</span>
-                <span class="score-label">Respuestas Correctas</span>
-              </div>
-              <div class="score-card incorrect-card">
-                <span id="score-incorrect" class="score-num">0</span>
-                <span class="score-label">Respuestas Incorrectas</span>
-              </div>
-            </div>
+      <section id="rps" class="tab-section"><div class="section-header"><span class="header-sigil">✊ ✦ ✋</span><h2 class="gothic-title">Piedra Papel Tijera</h2><p class="subtitle">vs Santuario</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Tú</span><br><span class="stat-value" id="rps-you">0</span></div><div><span class="stat-label">Santuario</span><br><span class="stat-value" id="rps-cpu">0</span></div></div><div class="rps-choices"><button class="rps-btn" onclick="playRPS('piedra')">✊</button><button class="rps-btn" onclick="playRPS('papel')">✋</button><button class="rps-btn" onclick="playRPS('tijera')">✌</button></div><p id="rps-result" class="rps-result">Elige...</p></div></section>
 
-            <button type="button" class="btn-crimson" onclick="restartQuiz()">Volver a Intentar</button>
-          </div>
-        </div>
-      </section>
+      <section id="ruleta" class="tab-section"><div class="section-header"><span class="header-sigil">❂ ✦ ❂</span><h2 class="gothic-title">Ruleta de Retos</h2><p class="subtitle">Gira para un reto</p></div><div class="cathedral-frame game-board"><div class="roulette-pointer"></div><div id="roulette-wheel" class="roulette-wheel"></div><button type="button" class="btn-crimson" onclick="spinRoulette()" style="margin-top:1.5rem;">♥ Girar ♥</button><p id="roulette-result" class="roulette-result">Gira para descubrir...</p></div></section>
 
-      <!-- ================= FOTOS ================= -->
+      <section id="rompecabezas" class="tab-section"><div class="section-header"><span class="header-sigil">◰ ✦ ◱</span><h2 class="gothic-title">Rompecabezas</h2><p class="subtitle">Ordena 1-8</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Movimientos</span><br><span class="stat-value" id="pz-moves">0</span></div><button type="button" class="btn-crimson" onclick="initPuzzle()">Mezclar</button></div><div id="puzzle-grid" class="puzzle-grid"></div><p id="pz-msg" class="game-status-msg" style="margin-top:1.5rem;"></p></div></section>
+
+      <section id="dado" class="tab-section"><div class="section-header"><span class="header-sigil">⚄ ✦ ⚄</span><h2 class="gothic-title">Dado de la Verdad</h2><p class="subtitle">Lanza y responde</p></div><div class="cathedral-frame game-board"><div id="dice-display" class="dice-display">⚀</div><button type="button" class="btn-crimson" onclick="rollDice()">⟲ Lanzar</button><p id="dice-question" class="dice-question">Lanza para recibir pregunta...</p></div></section>
+
+      <!-- 15 JUEGOS NUEVOS -->
+      <section id="snake" class="tab-section"><div class="section-header"><span class="header-sigil">⥁ ✦ ⥁</span><h2 class="gothic-title">Serpiente Carmesí</h2><p class="subtitle">Desliza con flechas o botones — come estrellas</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="snake-score">0</span></div><button type="button" class="btn-crimson" onclick="initSnake()">Nuevo</button></div><div id="snake-grid" class="snake-grid"></div><div class="maze-controls" style="margin-top:1rem;"><div class="maze-mid-row"><button class="maze-dir-btn" onclick="snakeDir(-1,0)">◀</button><button class="maze-dir-btn" onclick="snakeDir(0,-1)">▲</button><button class="maze-dir-btn" onclick="snakeDir(0,1)">▼</button><button class="maze-dir-btn" onclick="snakeDir(1,0)">▶</button></div></div></div></section>
+
+      <section id="g2048" class="tab-section"><div class="section-header"><span class="header-sigil">▣ ✦ ▣</span><h2 class="gothic-title">2048 Carmesí</h2><p class="subtitle">Combina números hasta 2048</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="g2048-score">0</span></div><button type="button" class="btn-crimson" onclick="init2048()">Nuevo</button></div><div id="g2048-grid" class="g2048-grid"></div><p style="margin-top:1rem;color:var(--white-silver);font-size:0.9rem;">Desliza con flechas o botones:</p><div class="maze-controls" style="margin-top:0.5rem;"><div class="maze-mid-row"><button class="maze-dir-btn" onclick="move2048('left')">◀</button><button class="maze-dir-btn" onclick="move2048('up')">▲</button><button class="maze-dir-btn" onclick="move2048('down')">▼</button><button class="maze-dir-btn" onclick="move2048('right')">▶</button></div></div></div></section>
+
+      <section id="reversi" class="tab-section"><div class="section-header"><span class="header-sigil">◐ ✦ ◑</span><h2 class="gothic-title">Reversi</h2><p class="subtitle">Rodea y conquista — K (rojo) vs D (blanco)</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">K</span><br><span class="stat-value" id="rev-k">2</span></div><div><span class="stat-label">D</span><br><span class="stat-value" id="rev-d">2</span></div><button type="button" class="btn-crimson" onclick="initReversi()">Nuevo</button></div><div id="reversi-grid" class="reversi-grid"></div><p id="rev-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="reaccion" class="tab-section"><div class="section-header"><span class="header-sigil">⚡ ✦ ⚡</span><h2 class="gothic-title">Test de Reacción</h2><p class="subtitle">Clic cuando se ponga rojo brillante</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Mejor</span><br><span class="stat-value" id="rx-best">—</span></div><button type="button" class="btn-crimson" onclick="initReaction()">Empezar</button></div><div id="rx-area" class="reaction-area waiting">Clic para empezar...</div><p id="rx-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="hanoi" class="tab-section"><div class="section-header"><span class="header-sigil">⋁ ✦ ⋁</span><h2 class="gothic-title">Torres de Hanoi</h2><p class="subtitle">Mueve los discos de izquierda a derecha</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Movimientos</span><br><span class="stat-value" id="hn-moves">0</span></div><button type="button" class="btn-crimson" onclick="initHanoi()">Nuevo</button></div><div id="hanoi-tower" class="hanoi-tower"></div><p id="hn-msg" class="game-status-msg" style="margin-top:1rem;">Clic en un palo para seleccionar, luego clic en otro para mover.</p></div></section>
+
+      <section id="anagrama" class="tab-section"><div class="section-header"><span class="header-sigil">⟲ ✦ ⟲</span><h2 class="gothic-title">Anagrama Carmesí</h2><p class="subtitle">Descifra la palabra mezclada</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Palabra</span><br><span class="stat-value" id="an-num">1/10</span></div><button type="button" class="btn-crimson" onclick="initAnagrama()">Nueva</button></div><div id="an-display" class="anagram-display">—</div><input type="text" id="an-input" class="anagram-input" placeholder="Tu respuesta..."><button type="button" class="btn-crimson" style="margin-top:1rem;" onclick="checkAnagrama()">Comprobar</button><p id="an-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="matematicas" class="tab-section"><div class="section-header"><span class="header-sigil">≠ ✦ =</span><h2 class="gothic-title">Matemáticas Rápidas</h2><p class="subtitle">Resuelve antes de que acabe el tiempo</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="mt-score">0</span></div><div><span class="stat-label">Tiempo</span><br><span class="stat-value" id="mt-time">30</span></div><button type="button" class="btn-crimson" onclick="initMath()">Empezar</button></div><div id="mt-display" class="math-display">+ +</div><div class="guess-input-row"><input type="number" id="mt-input" placeholder="Respuesta..." style="max-width:150px;"><button type="button" class="btn-crimson" onclick="checkMath()">Responder</button></div></div></section>
+
+      <section id="trivia" class="tab-section"><div class="section-header"><span class="header-sigil">❓ ✦ ❓</span><h2 class="gothic-title">Trivia Rápida</h2><p class="subtitle">Responde lo más rápido posible</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Correctas</span><br><span class="stat-value" id="tv-score">0</span></div><button type="button" class="btn-crimson" onclick="initTrivia()">Empezar</button></div><div id="tv-question" class="math-display" style="font-size:1.5rem;">Clic en Empezar</div><div id="tv-options" class="trivia-options"></div></div></section>
+
+      <section id="colores" class="tab-section"><div class="section-header"><span class="header-sigil">◉ ✦ ◉</span><h2 class="gothic-title">Colores Carmesí</h2><p class="subtitle">Encuentra el color diferente</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Nivel</span><br><span class="stat-value" id="cl-level">1</span></div><button type="button" class="btn-crimson" onclick="initColores()">Empezar</button></div><div id="cl-grid" class="color-grid"></div></div></section>
+
+      <section id="dardos" class="tab-section"><div class="section-header"><span class="header-sigil">⊕ ✦ ⊕</span><h2 class="gothic-title">Dardos del Amor</h2><p class="subtitle">Lanza 5 dardos al centro</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="dt-score">0</span></div><div><span class="stat-label">Dardos</span><br><span class="stat-value" id="dt-darts">5</span></div><button type="button" class="btn-crimson" onclick="initDardos()">Reiniciar</button></div><div id="dt-board" class="dartboard"></div></div></section>
+
+      <section id="adivinapalabra" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ❖</span><h2 class="gothic-title">Adivina la Palabra</h2><p class="subtitle">Con pistas — 5 intentos</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Intentos</span><br><span class="stat-value" id="aw-intentos">5</span></div><button type="button" class="btn-crimson" onclick="initAdivinaPalabra()">Nueva</button></div><p id="aw-hint" class="hint-display">Pista aquí...</p><div class="guess-input-row"><input type="text" id="aw-input" placeholder="Tu palabra..."><button type="button" class="btn-crimson" onclick="checkAdivinaPalabra()">Adivinar</button></div><p id="aw-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="orden" class="tab-section"><div class="section-header"><span class="header-sigil">① ✦ ⑨</span><h2 class="gothic-title">Orden Numérico</h2><p class="subtitle">Clic en los números en orden ascendente</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Siguiente</span><br><span class="stat-value" id="or-next">1</span></div><div><span class="stat-label">Tiempo</span><br><span class="stat-value" id="or-time">0</span></div><button type="button" class="btn-crimson" onclick="initOrden()">Empezar</button></div><div id="or-grid" class="color-grid"></div></div></section>
+
+      <section id="doble" class="tab-section"><div class="section-header"><span class="header-sigil">⚄ ✦ ⚅</span><h2 class="gothic-title">Doble Dado</h2><p class="subtitle">Lanza dos dados — saca dobles para ganar</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Dobles</span><br><span class="stat-value" id="db-dobles">0</span></div><div><span class="stat-label">Tiros</span><br><span class="stat-value" id="db-tiros">0</span></div></div><div style="font-size:4rem;color:var(--crimson-vivid);margin:1rem 0;"><span id="db-d1">⚀</span> <span id="db-d2">⚀</span></div><button type="button" class="btn-crimson" onclick="rollDoble()">⟲ Lanzar</button><p id="db-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <!-- 21 JUEGOS NUEVOS -->
+      <section id="pong" class="tab-section"><div class="section-header"><span class="header-sigil">◣ ✦ ◢</span><h2 class="gothic-title">Pong Carmesí</h2><p class="subtitle">Rebota la pelota — mueve con flechas o mouse</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="pong-score">0</span></div><button type="button" class="btn-crimson" onclick="initPong()">Nuevo</button></div><canvas id="pong-canvas" width="400" height="300" class="game-canvas"></canvas></div></section>
+
+      <section id="breakout" class="tab-section"><div class="section-header"><span class="header-sigil">▦ ✦ ▦</span><h2 class="gothic-title">Ladrillos</h2><p class="subtitle">Destruye todos los ladrillos</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="brk-score">0</span></div><button type="button" class="btn-crimson" onclick="initBreakout()">Nuevo</button></div><canvas id="brk-canvas" width="400" height="400" class="game-canvas"></canvas></div></section>
+
+      <section id="minigolf" class="tab-section"><div class="section-header"><span class="header-sigil">⛳ ✦ ⛳</span><h2 class="gothic-title">Mini Golf</h2><p class="subtitle">Mete la pelota en el hoyo — arrastra para apuntar</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Golpes</span><br><span class="stat-value" id="golf-strokes">0</span></div><button type="button" class="btn-crimson" onclick="initGolf()">Nuevo</button></div><canvas id="golf-canvas" width="400" height="300" class="game-canvas"></canvas><p id="golf-msg" class="game-status-msg" style="margin-top:0.5rem;">Arrastra desde la pelota para apuntar.</p></div></section>
+
+      <section id="sudoku4" class="tab-section"><div class="section-header"><span class="header-sigil">▦ ✦ ▦</span><h2 class="gothic-title">Sudoku 4x4</h2><p class="subtitle">Completa sin repetir números</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><button type="button" class="btn-crimson" onclick="initSudoku4()">Nuevo</button></div><div id="sudoku4-grid" class="g2048-grid" style="grid-template-columns:repeat(4,1fr);max-width:300px;"></div><p id="sudoku4-msg" class="game-status-msg" style="margin-top:1rem;">Clic en casilla para cambiar número.</p></div></section>
+
+      <section id="wordhide" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ❖</span><h2 class="gothic-title">Palabra Oculta</h2><p class="subtitle">Descifra la palabra mezclada</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Palabra</span><br><span class="stat-value" id="wh-num">1/10</span></div><button type="button" class="btn-crimson" onclick="initWordHide()">Nueva</button></div><div id="wh-display" class="anagram-display">—</div><input type="text" id="wh-input" class="anagram-input" placeholder="Respuesta..."><button type="button" class="btn-crimson" style="margin-top:1rem;" onclick="checkWordHide()">Comprobar</button><p id="wh-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="magicsquare" class="tab-section"><div class="section-header"><span class="header-sigil">⊡ ✦ ⊡</span><h2 class="gothic-title">Cuadrado Mágico</h2><p class="subtitle">Coloca números 1-9 para sumar 15</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><button type="button" class="btn-crimson" onclick="initMagicSquare()">Reiniciar</button></div><div id="ms-grid" class="g2048-grid" style="grid-template-columns:repeat(3,1fr);max-width:280px;"></div><p id="ms-msg" class="game-status-msg" style="margin-top:1rem;">Clic en casilla para colocar el siguiente número.</p></div></section>
+
+      <section id="sequence" class="tab-section"><div class="section-header"><span class="header-sigil">① ✦ ①</span><h2 class="gothic-title">Secuencia</h2><p class="subtitle">Memoriza y repite la secuencia</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Nivel</span><br><span class="stat-value" id="seq-level">1</span></div><button type="button" class="btn-crimson" onclick="initSequence()">Empezar</button></div><div id="seq-grid" class="color-grid"></div><p id="seq-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="catchstar" class="tab-section"><div class="section-header"><span class="header-sigil">★ ✦ ★</span><h2 class="gothic-title">Atrapa Estrellas</h2><p class="subtitle">Mueve la canasta con flechas</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="cs-score">0</span></div><button type="button" class="btn-crimson" onclick="initCatchStar()">Nuevo</button></div><canvas id="cs-canvas" width="400" height="400" class="game-canvas"></canvas></div></section>
+
+      <section id="horse race" class="tab-section"><div class="section-header"><span class="header-sigil">♞ ✦ ♞</span><h2 class="gothic-title">Carrera</h2><p class="subtitle">¿Qué caballo gana?</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><button type="button" class="btn-crimson" onclick="initHorseRace()">Empezar</button></div><div id="hr-track" style="display:flex;flex-direction:column;gap:0.5rem;margin:1rem auto;max-width:500px;"></div><p id="hr-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="dicepoker" class="tab-section"><div class="section-header"><span class="header-sigil">⚅ ✦ ⚅</span><h2 class="gothic-title">Dados Poker</h2><p class="subtitle">Mejor mano de 5 dados</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><button type="button" class="btn-crimson" onclick="rollDicePoker()">Lanzar</button></div><div id="dp-dice" style="font-size:3rem;color:var(--crimson-vivid);margin:1rem 0;"></div><p id="dp-result" class="game-status-msg" style="margin-top:1rem;font-size:1.2rem;"></p></div></section>
+
+      <section id="blackjack" class="tab-section"><div class="section-header"><span class="header-sigil">♣ ✦ ♠</span><h2 class="gothic-title">Blackjack</h2><p class="subtitle">Llega a 21 sin pasarte</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Tú</span><br><span class="stat-value" id="bj-you">0</span></div><div><span class="stat-label">Casa</span><br><span class="stat-value" id="bj-dealer">0</span></div><button type="button" class="btn-crimson" onclick="initBlackjack()">Nuevo</button></div><div id="bj-cards" style="font-size:2rem;margin:1rem 0;min-height:3rem;"></div><button class="btn-crimson" onclick="bjHit()">Pedir</button> <button class="btn-outline" onclick="bjStand()">Plantarse</button><p id="bj-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="numroulette" class="tab-section"><div class="section-header"><span class="header-sigil">⊙ ✦ ⊙</span><h2 class="gothic-title">Ruleta Numérica</h2><p class="subtitle">Apuesta al número correcto</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="nr-points">100</span></div></div><div class="guess-input-row"><input type="number" id="nr-bet" placeholder="Puntos a apostar" min="1"><input type="number" id="nr-num" placeholder="Número 0-9" min="0" max="9"><button type="button" class="btn-crimson" onclick="spinNumRoulette()">Girar</button></div><div id="nr-display" style="font-size:3rem;color:var(--crimson-vivid);margin:1rem 0;">—</div><p id="nr-msg" class="game-status-msg"></p></div></section>
+
+      <section id="findpair" class="tab-section"><div class="section-header"><span class="header-sigil">❖ ✦ ❖</span><h2 class="gothic-title">Encuentra el Par</h2><p class="subtitle">Encuentra dos cartas iguales</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Intentos</span><br><span class="stat-value" id="fp-tries">0</span></div><button type="button" class="btn-crimson" onclick="initFindPair()">Nuevo</button></div><div id="fp-grid" class="memory-grid"></div><p id="fp-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="quicksum" class="tab-section"><div class="section-header"><span class="header-sigil">+ ✦ +</span><h2 class="gothic-title">Suma Rápida</h2><p class="subtitle">Suma 10 pares lo más rápido posible</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Restantes</span><br><span class="stat-value" id="qs-remain">10</span></div><div><span class="stat-label">Tiempo</span><br><span class="stat-value" id="qs-time">0</span></div><button type="button" class="btn-crimson" onclick="initQuickSum()">Empezar</button></div><div id="qs-display" class="math-display">+ +</div><div class="guess-input-row"><input type="number" id="qs-input" placeholder="Suma..."><button type="button" class="btn-crimson" onclick="checkQuickSum()">Responder</button></div></div></section>
+
+      <section id="cardmemory" class="tab-section"><div class="section-header"><span class="header-sigil">♠ ✦ ♥</span><h2 class="gothic-title">Cartas Memoria</h2><p class="subtitle">Memoriza las cartas mostradas</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Nivel</span><br><span class="stat-value" id="cm-level">1</span></div><button type="button" class="btn-crimson" onclick="initCardMemory()">Empezar</button></div><div id="cm-display" style="font-size:2.5rem;margin:1rem 0;min-height:3rem;"></div><div class="guess-input-row"><input type="text" id="cm-input" placeholder="Cartas en orden..."><button type="button" class="btn-crimson" onclick="checkCardMemory()">Responder</button></div><p id="cm-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="minimaze2" class="tab-section"><div class="section-header"><span class="header-sigil">⬚ ✦ ⬚</span><h2 class="gothic-title">Mini Laberinto 2</h2><p class="subtitle">Llega a la meta</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Pasos</span><br><span class="stat-value" id="mm2-steps">0</span></div><button type="button" class="btn-crimson" onclick="initMiniMaze2()">Nuevo</button></div><canvas id="mm2-canvas" width="300" height="300" class="game-canvas"></canvas><div class="maze-controls" style="margin-top:1rem;"><div class="maze-mid-row"><button class="maze-dir-btn" onclick="mm2Move(-1,0)">◀</button><button class="maze-dir-btn" onclick="mm2Move(0,-1)">▲</button><button class="maze-dir-btn" onclick="mm2Move(0,1)">▼</button><button class="maze-dir-btn" onclick="mm2Move(1,0)">▶</button></div></div></div></section>
+
+      <section id="basket" class="tab-section"><div class="section-header"><span class="header-sigil">❍ ✦ ❍</span><h2 class="gothic-title">Canasta</h2><p class="subtitle">Encesta pelotas — clic para lanzar</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="bsk-score">0</span></div><div><span class="stat-label">Tiros</span><br><span class="stat-value" id="bsk-shots">5</span></div><button type="button" class="btn-crimson" onclick="initBasket()">Reiniciar</button></div><canvas id="bsk-canvas" width="400" height="400" class="game-canvas"></canvas></div></section>
+
+      <section id="latinsquare" class="tab-section"><div class="section-header"><span class="header-sigil">⊞ ✦ ⊞</span><h2 class="gothic-title">Cuadrado Latino</h2><p class="subtitle">Completa sin repetir en filas y columnas</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><button type="button" class="btn-crimson" onclick="initLatinSquare()">Nuevo</button></div><div id="ls-grid" class="g2048-grid" style="grid-template-columns:repeat(4,1fr);max-width:320px;"></div><p id="ls-msg" class="game-status-msg" style="margin-top:1rem;">Clic para cambiar número.</p></div></section>
+
+      <section id="reactionpro" class="tab-section"><div class="section-header"><span class="header-sigil">⚡ ✦ ⚡</span><h2 class="gothic-title">Reacción Pro</h2><p class="subtitle">5 rondas — promedio final</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Ronda</span><br><span class="stat-value" id="rpr-round">0/5</span></div><div><span class="stat-label">Promedio</span><br><span class="stat-value" id="rpr-avg">—</span></div><button type="button" class="btn-crimson" onclick="initReactionPro()">Empezar</button></div><div id="rpr-area" class="reaction-area waiting">Clic para empezar...</div><p id="rpr-msg" class="game-status-msg" style="margin-top:1rem;"></p></div></section>
+
+      <section id="colormatch" class="tab-section"><div class="section-header"><span class="header-sigil">◉ ✦ ◉</span><h2 class="gothic-title">Match de Color</h2><p class="subtitle">Clic en el color que se muestra</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Puntos</span><br><span class="stat-value" id="clm-score">0</span></div><div><span class="stat-label">Tiempo</span><br><span class="stat-value" id="clm-time">20</span></div><button type="button" class="btn-crimson" onclick="initColorMatch()">Empezar</button></div><div id="clm-target" style="width:80px;height:80px;margin:1rem auto;border:2px solid var(--crimson-vivid);"></div><div id="clm-grid" class="color-grid"></div></div></section>
+
+      <section id="numberhunt" class="tab-section"><div class="section-header"><span class="header-sigil">⌕ ✦ ⌕</span><h2 class="gothic-title">Caza Números</h2><p class="subtitle">Encuentra el número objetivo</p></div><div class="cathedral-frame game-board"><div class="game-status-bar"><div><span class="stat-label">Buscar</span><br><span class="stat-value" id="nh-target">—</span></div><div><span class="stat-label">Tiempo</span><br><span class="stat-value" id="nh-time">0</span></div><button type="button" class="btn-crimson" onclick="initNumberHunt()">Nuevo</button></div><div id="nh-grid" class="color-grid"></div></div></section>
+
+      <!-- FOTOS -->
       <section id="fotos" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">❖ ✦ ❖</span>
-          <h2 class="gothic-title">Galería de Retratos</h2>
-          <p class="subtitle">Haz clic en la fecha para editarla o en la foto para ampliarla</p>
-        </div>
-
-        <div class="gallery-grid" id="photo-gallery">
-          <div class="cathedral-frame media-card">
-            <div class="card-top-bar">
-              <span class="date-tag" contenteditable="true">27 de Enero, 2026</span>
-            </div>
-            <div class="arch-frame" onclick="openLightbox(this)">
-              <img src="../fotos dom/IMG-20261114-WA0002.jpg" alt="Nuestro Comienzo">
-              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
-            </div>
-            <h3 class="card-title" contenteditable="true">Nuestro Comienzo</h3>
-            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
-          </div>
-
-          <div class="cathedral-frame media-card">
-            <div class="card-top-bar">
-              <span class="date-tag" contenteditable="true">Fecha editable</span>
-            </div>
-            <div class="arch-frame" onclick="openLightbox(this)">
-              <img src="" alt="Recuerdo 2">
-              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
-            </div>
-            <h3 class="card-title" contenteditable="true">Título del Recuerdo</h3>
-            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
-          </div>
-
-          <div class="cathedral-frame media-card">
-            <div class="card-top-bar">
-              <span class="date-tag" contenteditable="true">Fecha editable</span>
-            </div>
-            <div class="arch-frame" onclick="openLightbox(this)">
-              <img src="" alt="Recuerdo 3">
-              <div class="frame-overlay"><span>Ampliar Retrato</span></div>
-            </div>
-            <h3 class="card-title" contenteditable="true">Título del Recuerdo</h3>
-            <p class="card-desc" contenteditable="true">Escribe aquí una breve descripción de este momento.</p>
-          </div>
-        </div>
+        <div class="section-header"><span class="header-sigil">❑ ✦ ❑</span><h2 class="gothic-title">Galería de Retratos</h2><p class="subtitle">Hasta 1000 fotos — edita, recorta y ajusta</p></div>
+        <div id="fotos-context"></div>
+        <div id="fotos-counter" class="media-counter-bar"></div>
+        <div id="fotos-filter" class="filter-bar"></div>
+        <div id="photo-gallery" class="gallery-grid"></div>
+        <div id="fotos-pagination" class="pagination"></div>
       </section>
 
-      <!-- ================= VIDEOS ================= -->
+      <!-- VIDEOS -->
       <section id="videos" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">▶ ✦ ▶</span>
-          <h2 class="gothic-title">Archivo en Movimiento</h2>
-          <p class="subtitle">Escenas inmortalizadas para nuestra eternidad</p>
-        </div>
-
-        <div class="video-grid">
-          <div class="cathedral-frame media-card">
-            <div class="card-top-bar">
-              <span class="date-tag" contenteditable="true">Fecha editable</span>
-            </div>
-            <div class="video-frame">
-              <video controls src=""></video>
-            </div>
-            <h3 class="card-title" contenteditable="true">Recuerdo en Video #1</h3>
-            <p class="card-desc" contenteditable="true">Descripción de esta escena.</p>
-          </div>
-
-          <div class="cathedral-frame media-card">
-            <div class="card-top-bar">
-              <span class="date-tag" contenteditable="true">Fecha editable</span>
-            </div>
-            <div class="video-frame">
-              <video controls src=""></video>
-            </div>
-            <h3 class="card-title" contenteditable="true">Recuerdo en Video #2</h3>
-            <p class="card-desc" contenteditable="true">Descripción de esta escena.</p>
-          </div>
-        </div>
+        <div class="section-header"><span class="header-sigil">▷ ✦ ▷</span><h2 class="gothic-title">Archivo en Movimiento</h2><p class="subtitle">Hasta 1000 videos — edita con transforms y audio</p></div>
+        <div id="videos-context"></div>
+        <div id="videos-counter" class="media-counter-bar"></div>
+        <div id="videos-filter" class="filter-bar"></div>
+        <div id="video-gallery" class="video-grid"></div>
+        <div id="videos-pagination" class="pagination"></div>
       </section>
 
-      <!-- ================= CANCIONES ================= -->
+      <!-- CANCIONES -->
       <section id="canciones" class="tab-section">
-        <div class="section-header">
-          <span class="header-sigil">♫ ✦ ♫</span>
-          <h2 class="gothic-title">Nuestras Canciones</h2>
-          <p class="subtitle">Vinilos eternos que resuenan en nuestra oscuridad</p>
-        </div>
-
-        <div class="songs-grid">
-          <div class="cathedral-frame song-card">
-            <div class="vinyl-showcase">
-              <div class="album-cover">
-                <img src="" alt="Portada de la canción">
-              </div>
-              <div class="vinyl-disc">
-                <div class="vinyl-label">K†D</div>
-              </div>
-            </div>
-            <div class="song-details">
-              <h3 class="card-title">Título de la Canción #1</h3>
-              <p class="card-desc">Artista — Dedicatoria especial</p>
-              <a href="#" target="_blank" class="btn-crimson">
-                <span>♫ Abrir en Spotify</span>
-              </a>
-            </div>
+        <div class="section-header"><span class="header-sigil">♫ ✦ ♫</span><h2 class="gothic-title">Nuestras Canciones</h2><p class="subtitle">Hasta 500 — pega link de Spotify y se auto-completa</p></div>
+        <div id="canciones-context"></div>
+        <div id="canciones-counter" class="media-counter-bar"></div>
+        <div id="canciones-filter" class="filter-bar"></div>
+        <div class="cathedral-frame" style="max-width:700px;margin:0 auto 2rem;">
+          <h3 class="panel-heading">Añadir Canción desde Spotify</h3>
+          <div class="spotify-add-form">
+            <input type="url" id="spotify-url-input" placeholder="Pega aquí el link de Spotify (https://open.spotify.com/track/...)">
+            <button type="button" class="btn-crimson" onclick="addSongFromSpotify()">♫ Añadir</button>
           </div>
-
-          <div class="cathedral-frame song-card">
-            <div class="vinyl-showcase">
-              <div class="album-cover">
-                <img src="" alt="Portada de la canción">
-              </div>
-              <div class="vinyl-disc">
-                <div class="vinyl-label">K†D</div>
-              </div>
-            </div>
-            <div class="song-details">
-              <h3 class="card-title">Título de la Canción #2</h3>
-              <p class="card-desc">Artista — Dedicatoria especial</p>
-              <a href="#" target="_blank" class="btn-crimson">
-                <span>♫ Abrir en Spotify</span>
-              </a>
-            </div>
-          </div>
+          <p id="spotify-status" class="spotify-loading" style="display:none;"></p>
         </div>
+        <div id="songs-grid" class="songs-grid"></div>
+        <div id="canciones-pagination" class="pagination"></div>
       </section>
 
-      <!-- ================= CONTADOR DE TIEMPO ================= -->
+      <!-- SORPRESAS -->
+      <section id="sorpresas" class="tab-section">
+        <div class="section-header"><span class="header-sigil">✦ ✦ ✦</span><h2 class="gothic-title">Sorpresas</h2><p class="subtitle">Links a Canva, YouTube, TikTok y más</p></div>
+        <div id="sorpresas-context"></div>
+        <div id="sorpresas-grid" class="sorpresas-grid"></div>
+      </section>
+
+      <!-- TIEMPO -->
       <section id="tiempo" class="tab-section">
         <div class="cathedral-frame counter-box">
           <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-
           <span class="header-sigil">⧗ ✦ ⧗</span>
           <h2 class="gothic-title">Reloj de Nuestra Eternidad</h2>
-          <p class="subtitle">Cada segundo transcurrido desde el 27 de enero de 2026</p>
-
+          <p class="subtitle">Desde el 27 de enero de 2026</p>
           <div class="timer-grid">
-            <div class="reliquary-block">
-              <span id="days" class="time-number">0</span>
-              <span class="time-label">Días</span>
-            </div>
-            <div class="reliquary-block">
-              <span id="hours" class="time-number">0</span>
-              <span class="time-label">Horas</span>
-            </div>
-            <div class="reliquary-block">
-              <span id="minutes" class="time-number">0</span>
-              <span class="time-label">Minutos</span>
-            </div>
-            <div class="reliquary-block">
-              <span id="seconds" class="time-number">0</span>
-              <span class="time-label">Segundos</span>
-            </div>
+            <div class="reliquary-block"><span id="days" class="time-number">0</span><span class="time-label">Días</span></div>
+            <div class="reliquary-block"><span id="hours" class="time-number">0</span><span class="time-label">Horas</span></div>
+            <div class="reliquary-block"><span id="minutes" class="time-number">0</span><span class="time-label">Minutos</span></div>
+            <div class="reliquary-block"><span id="seconds" class="time-number">0</span><span class="time-label">Segundos</span></div>
           </div>
-
           <div class="gothic-divider"><span>†</span></div>
-
-          <p class="total-hours-text">
-            Acumulando <strong id="total-hours" class="crimson-glow">0</strong> horas ininterrumpidas juntos.
-          </p>
+          <p class="total-hours-text">Acumulando <strong id="total-hours" class="crimson-glow">0</strong> horas ininterrumpidas juntos.</p>
+          <div class="gothic-divider"><span>✦</span></div>
+          <h3 class="panel-heading" style="margin-bottom:1rem;">Estadísticas de Nuestra Eternidad</h3>
+          <div id="time-extra-stats" class="time-extra-stats"></div>
+          <div class="time-progress-bar"><div id="time-progress-fill" class="time-progress-fill" style="width:0%"></div></div>
+          <p style="text-align:center;color:var(--white-silver);font-size:0.9rem;margin-top:0.5rem;">Progreso hacia nuestro primer aniversario</p>
         </div>
       </section>
 
-      <!-- ================= CARTA ================= -->
+      <!-- CARTA -->
       <section id="carta" class="tab-section">
+        <div id="carta-context"></div>
         <div class="cathedral-frame parchment-box">
           <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-
-          <div class="letter-header">
-            <span class="header-sigil">✒</span>
-            <h2 class="gothic-title">Para Ti, Mi Alma</h2>
-          </div>
-          
-          <div id="letter-content" class="letter-body" contenteditable="true" spellcheck="false">Haz clic aquí para escribir tu carta...</div>
-
+          <div class="letter-header"><span class="header-sigil">✒</span><h2 class="gothic-title">Para Ti, Mi Alma</h2></div>
+          <div id="letter-content" class="letter-body" contenteditable="true" spellcheck="false"></div>
           <div class="letter-footer">
             <span id="save-status" class="save-indicator"></span>
-            <div class="wax-signature">
-              <span class="mini-seal">K†D</span>
-              <p class="signature">Por siempre tuyo.</p>
-            </div>
+            <div class="wax-signature"><span class="mini-seal">K†D</span><p class="signature">Por siempre tuyo.</p></div>
           </div>
-        </div>
-      </section>
-
-      <!-- ================= SORPRESA ================= -->
-      <section id="sorpresa" class="tab-section">
-        <div class="cathedral-frame surprise-box">
-          <svg class="filigree tl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <svg class="filigree tr" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <svg class="filigree bl" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <svg class="filigree br" viewBox="0 0 100 100"><path d="M2,98 L2,20 Q2,2 20,2 L98,2 M12,85 L12,25 Q12,12 25,12 L85,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-
-          <div class="relic-icon">♛</div>
-          <h2 class="gothic-title">El Último Relicario</h2>
-          <p class="subtitle">Un secreto guardado más allá de este santuario espera por ti...</p>
-          
-          <a href="#" target="_blank" class="btn-crimson surprise-btn">
-            <span>Haz click para ver otra sorpresa</span>
-          </a>
         </div>
       </section>
 
     </main>
 
-    <!-- Botón Flotante Permanente de Mensajes Amorosos de Emergencia -->
-    <button class="floating-emergency-btn" onclick="triggerLoveEmergency()" title="Mensajes Amorosos de Emergencia">
-      ♥
-    </button>
+    <button class="floating-emergency-btn" onclick="spawnHeartsOnly()" title="Lluvia de corazones">♥</button>
   </div>
 
-  <!-- MODAL GENÉRICO (EMERGENCIA DE AMOR / RETO DE BOMBA / GANASTE LABERINTO) -->
+  <!-- MENU RETRO DE JUEGOS -->
+  <div id="games-arcade" class="games-arcade-overlay hidden" onclick="if(event.target===this)closeGamesArcade()">
+    <div class="cathedral-frame games-arcade-card">
+      <div class="games-arcade-header">
+        <button class="games-arcade-close" onclick="event.stopPropagation();closeGamesArcade()">✕</button>
+        <h2 class="games-arcade-title">⚔ Sala de Juegos ⚔</h2>
+        <p class="games-arcade-subtitle">Selecciona un juego del santuario</p>
+      </div>
+      <div id="games-arcade-grid" class="games-arcade-grid"></div>
+    </div>
+  </div>
+
+  <!-- MODAL EMERGENCIA -->
   <div id="sacred-modal" class="emergency-modal hidden" onclick="closeSacredModal()">
     <div class="cathedral-frame emergency-card" onclick="event.stopPropagation()">
       <div id="modal-icon" class="relic-icon heart-pulse-big">♥</div>
@@ -1005,7 +620,95 @@
     </div>
   </div>
 
-  <!-- MODAL LIGHTBOX PARA AMPLIAR FOTOS -->
+  <!-- MODAL EDICIÓN FOTO -->
+  <div id="photo-edit-modal" class="edit-modal hidden" onclick="closePhotoEdit(event)">
+    <div class="cathedral-frame edit-modal-card" onclick="event.stopPropagation()">
+      <h2 class="edit-modal-title">✎ Editor de Foto</h2>
+      <div class="crop-container" id="crop-container">
+        <canvas id="edit-photo-canvas"></canvas>
+        <div class="crop-overlay" id="crop-overlay">
+          <div class="crop-grid-lines"></div>
+          <div class="crop-handle tl" data-handle="tl"></div>
+          <div class="crop-handle tr" data-handle="tr"></div>
+          <div class="crop-handle bl" data-handle="bl"></div>
+          <div class="crop-handle br" data-handle="br"></div>
+        </div>
+      </div>
+      <div class="crop-mode-toggle">
+        <button class="edit-control-btn active" data-mode="adjust" onclick="setEditMode('adjust')">✎ Ajustar</button>
+        <button class="edit-control-btn" data-mode="crop" onclick="setEditMode('crop')">◺ Recortar</button>
+        <button class="edit-control-btn" data-mode="stickers" onclick="setEditMode('stickers')">★ Stickers</button>
+      </div>
+      <div id="adjust-controls" class="edit-controls">
+        <button class="edit-control-btn" onclick="rotatePhoto(-90)">⟲ -90°</button>
+        <button class="edit-control-btn" onclick="rotatePhoto(90)">⟳ +90°</button>
+        <button class="edit-control-btn" onclick="flipPhoto('h')">⇋ Espejo H</button>
+        <button class="edit-control-btn" onclick="flipPhoto('v')">⇅ Espejo V</button>
+        <div class="edit-slider-group"><span class="edit-slider-label">Brillo</span><input type="range" class="edit-slider" id="edit-brightness" min="0" max="200" value="100" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-brightness-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Contraste</span><input type="range" class="edit-slider" id="edit-contrast" min="0" max="200" value="100" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-contrast-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Saturación</span><input type="range" class="edit-slider" id="edit-saturate" min="0" max="200" value="100" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-saturate-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Escala</span><input type="range" class="edit-slider" id="edit-scale" min="20" max="100" value="100" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-scale-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Rotación</span><input type="range" class="edit-slider" id="edit-rotate" min="-180" max="180" value="0" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-rotate-val">0°</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Tono (Hue)</span><input type="range" class="edit-slider" id="edit-hue" min="0" max="360" value="0" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-hue-val">0°</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Sepia</span><input type="range" class="edit-slider" id="edit-sepia" min="0" max="100" value="0" oninput="renderEditPreview()"><span class="edit-slider-value" id="edit-sepia-val">0%</span></div>
+      </div>
+      <div id="crop-controls" class="edit-controls" style="display:none;">
+        <p style="grid-column:1/-1;color:var(--white-silver);">Arrastra el recuadro para mover. Usa las esquinas para cambiar tamaño.</p>
+        <button class="edit-control-btn" onclick="cropApply()">✓ Aplicar Recorte</button>
+        <button class="edit-control-btn" onclick="cropReset()">↻ Reiniciar Recorte</button>
+        <button class="edit-control-btn" onclick="cropSetAspect('1:1')">◳ 1:1</button>
+        <button class="edit-control-btn" onclick="cropSetAspect('4:3')">◳ 4:3</button>
+        <button class="edit-control-btn" onclick="cropSetAspect('16:9')">◳ 16:9</button>
+        <button class="edit-control-btn" onclick="cropSetAspect('free')">◧ Libre</button>
+      </div>
+      <div id="sticker-controls" class="edit-controls" style="display:none;">
+        <p style="grid-column:1/-1;color:var(--white-silver);">Clic en un emoji para añadirlo como sticker. Arrástralo para moverlo. Clic en ✕ para eliminar.</p>
+        <div id="sticker-picker" class="sticker-picker-bar"></div>
+      </div>
+      <div class="edit-actions">
+        <button class="btn-crimson" onclick="savePhotoEdit()">✓ Guardar y Recargar</button>
+        <button class="btn-outline" onclick="resetPhotoEdit()">↻ Reiniciar Todo</button>
+        <button class="btn-outline" onclick="closePhotoEdit()">✕ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDICIÓN VIDEO -->
+  <div id="video-edit-modal" class="edit-modal hidden" onclick="closeVideoEdit(event)">
+    <div class="cathedral-frame edit-modal-card" onclick="event.stopPropagation()">
+      <h2 class="edit-modal-title">▷ Editor de Video</h2>
+      <div class="video-edit-preview"><video id="edit-video-preview" controls playsinline></video></div>
+      <div class="edit-controls">
+        <button class="edit-control-btn" onclick="videoRotate(-90)">⟲ -90°</button>
+        <button class="edit-control-btn" onclick="videoRotate(90)">⟳ +90°</button>
+        <button class="edit-control-btn" onclick="videoFlip('h')">⇋ Espejo H</button>
+        <button class="edit-control-btn" onclick="videoFlip('v')">⇅ Espejo V</button>
+        <div class="edit-slider-group"><span class="edit-slider-label">Brillo</span><input type="range" class="edit-slider" id="vedit-brightness" min="0" max="200" value="100" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-brightness-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Contraste</span><input type="range" class="edit-slider" id="vedit-contrast" min="0" max="200" value="100" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-contrast-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Saturación</span><input type="range" class="edit-slider" id="vedit-saturate" min="0" max="200" value="100" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-saturate-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Escala</span><input type="range" class="edit-slider" id="vedit-scale" min="50" max="200" value="100" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-scale-val">100%</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Rotación</span><input type="range" class="edit-slider" id="vedit-rotate" min="-180" max="180" value="0" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-rotate-val">0°</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Tono (Hue)</span><input type="range" class="edit-slider" id="vedit-hue" min="0" max="360" value="0" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-hue-val">0°</span></div>
+        <div class="edit-slider-group"><span class="edit-slider-label">Sepia</span><input type="range" class="edit-slider" id="vedit-sepia" min="0" max="100" value="0" oninput="applyVideoFilters()"><span class="edit-slider-value" id="vedit-sepia-val">0%</span></div>
+      </div>
+      <div class="video-trim-row">
+        <span class="trim-label">Inicio (s): <input type="number" id="video-trim-start" min="0" step="0.5" value="0" style="width:80px;display:inline-block;"></span>
+        <span class="trim-label">Fin (s): <input type="number" id="video-trim-end" min="0" step="0.5" value="0" style="width:80px;display:inline-block;"></span>
+        <small style="color:var(--white-silver);">Duración: <span id="video-duration">—</span></small>
+      </div>
+      <div class="video-trim-row">
+        <span class="trim-label">Velocidad: <select id="video-speed" style="width:auto;display:inline-block;"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></span>
+      </div>
+      <div class="video-checkbox-row"><p style="color:var(--crimson-glow);font-style:italic;font-size:0.85rem;">♪ Todos los videos se muestran sin audio</p></div>
+      <div class="video-checkbox-row"><input type="checkbox" id="video-loop"><label for="video-loop">Reproducir en bucle</label></div>
+      <div class="edit-actions">
+        <button class="btn-crimson" onclick="saveVideoEdit()">✓ Guardar y Recargar</button>
+        <button class="btn-outline" onclick="closeVideoEdit()">✕ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
     <div class="lightbox-content" onclick="event.stopPropagation()">
       <button class="lightbox-close" onclick="closeLightbox()">✕</button>
@@ -1015,4 +718,4 @@
 
   <script src="../JS/Javascript.js"></script>
 </body>
-</html>
+</html> 
