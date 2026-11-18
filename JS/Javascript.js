@@ -7,6 +7,103 @@
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
+  // ================= CONFIGURACIÓN FIREBASE + CLOUDINARY =================
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCgensFor92VXDMcQypSu_6JfxpTb-oURII",
+    authDomain: "santuario-carmesi.firebaseapp.com",
+    projectId: "santuario-carmesi",
+    storageBucket: "santuario-carmesi.appspot.com",
+    messagingSenderId: "986324978755",
+    appId: "1:986324978755:web:2b15ebcaa3428ca45098f6"
+  };
+  const CLOUDINARY_CONFIG = { cloudName: "", uploadPreset: "santuario" };
+
+  // Inicializar Firebase de forma segura (NO bloquea la app si falla)
+  let fbDB = null, fbReady = false;
+  try {
+    if (typeof firebase !== "undefined") {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fbDB = firebase.firestore();
+      fbReady = true;
+      console.log("Firebase conectado");
+    }
+  } catch (e) { console.log("Firebase no disponible, usando local:", e.message); }
+
+  const CLOUDINARY_ENABLED = CLOUDINARY_CONFIG.cloudName.length > 3;
+
+  // Sincronizar con Firestore en segundo plano (no bloquea)
+  function fbSyncKey(key) {
+    if (!fbDB) return;
+    try {
+      const value = localStorage.getItem(key);
+      if (value) fbDB.collection("santuario").doc(key).set({ value, timestamp: Date.now() }).catch(()=>{});
+    } catch(e) {}
+  }
+
+  function fbDownloadAllData() {
+    if (!fbDB) return Promise.resolve();
+    return fbDB.collection("santuario").get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const key = doc.id;
+        if (!localStorage.getItem(key)) localStorage.setItem(key, doc.data().value);
+      });
+    }).catch(() => {});
+  }
+
+  function fbListenChat(cb) {
+    if (!fbDB) return;
+    fbDB.collection("santuario").doc("kd_chat_messages").onSnapshot((doc) => {
+      if (doc.exists) { localStorage.setItem("kd_chat_messages", doc.data().value); cb(); }
+    }).catch?.(()=>{});
+  }
+
+  function fbListenProfiles(cb) {
+    if (!fbDB) return;
+    ["kd_profile_kevin", "kd_profile_dominic"].forEach((key) => {
+      fbDB.collection("santuario").doc(key).onSnapshot((doc) => {
+        if (doc.exists) { localStorage.setItem(key, doc.data().value); cb(); }
+      }).catch?.(()=>{});
+    });
+  }
+
+  // Cloudinary media upload
+  const FbMediaStore = {
+    async save(id, data) {
+      if (!CLOUDINARY_ENABLED) return false;
+      try {
+        const formData = new FormData();
+        formData.append("file", data);
+        formData.append("upload_preset", CLOUDINARY_CONFIG.uploadPreset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/auto/upload`, { method: "POST", body: formData });
+        const result = await res.json();
+        if (result.secure_url && fbDB) {
+          fbDB.collection("media").doc(id).set({ url: result.secure_url }).catch(()=>{});
+        }
+        return result.secure_url || false;
+      } catch (e) { return false; }
+    },
+    async get(id) {
+      if (!CLOUDINARY_ENABLED || !fbDB) return null;
+      try {
+        const doc = await fbDB.collection("media").doc(id).get();
+        if (doc.exists) return doc.data().url;
+      } catch (e) {}
+      return null;
+    },
+    async delete(id) { if (fbDB) { try { await fbDB.collection("media").doc(id).delete(); } catch(e){} } }
+  };
+
+  // Override localStorage.setItem para sincronizar con Firebase
+  if (fbReady) {
+    const _origSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(key, value) {
+      _origSetItem(key, value);
+      if (key && key.startsWith("kd_") && !key.startsWith("kd_content_cleaned")) {
+        try { fbSyncKey(key); } catch(e) {}
+      }
+    };
+  }
+
   let currentUser = null, currentMode = "editor";
   const VALID_USERS = ["Kevin", "Dominic"];
   const VALID_PASS = "27-1-2026";
@@ -24,6 +121,16 @@ document.addEventListener("DOMContentLoaded", () => {
     delete(id) { return new Promise((res, rej) => { if (!this.db) return rej(); const tx = this.db.transaction(this.storeName, "readwrite"); tx.objectStore(this.storeName).delete(id); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); }); }
   };
   MediaStore.init();
+
+  // Override MediaStore para usar Firebase Storage además de IndexedDB
+  if (fbReady) {
+    const _origMediaSave = MediaStore.save.bind(MediaStore);
+    const _origMediaGet = MediaStore.get.bind(MediaStore);
+    const _origMediaDelete = MediaStore.delete.bind(MediaStore);
+    MediaStore.save = async function(id, data) { try { await _origMediaSave(id, data); } catch(e){} try { await FbMediaStore.save(id, data); } catch(e){} };
+    MediaStore.get = async function(id) { try { const u = await FbMediaStore.get(id); if (u) return u; } catch(e){} return _origMediaGet(id); };
+    MediaStore.delete = async function(id) { try { await _origMediaDelete(id); } catch(e){} try { await FbMediaStore.delete(id); } catch(e){} };
+  }
 
   // ================= DOM =================
   const loginScreen = document.getElementById("login-screen"), mainApp = document.getElementById("main-app");
@@ -63,6 +170,13 @@ document.addEventListener("DOMContentLoaded", () => {
     modeIndicator.className = "mode-badge " + mode;
     document.body.classList.toggle("reader-mode", mode === "reader");
     loginScreen.classList.add("hidden"); mainApp.classList.remove("hidden");
+    // Firebase: sincronizar en segundo plano (NO bloquear la app si falla)
+    if (fbReady) {
+      fbDownloadAllData().then(() => {
+        try { fbListenChat(() => renderChat()); } catch(e){}
+        try { fbListenProfiles(() => renderProfiles()); } catch(e){}
+      }).catch(e => console.error("Firebase sync error (no bloquea):", e));
+    }
     initProfileContextBanner(); renderProfiles(); initAllSections();
     drawConstellationMap(); drawMaze(); startConstellationAnimation(); renderChat();
   }
@@ -245,6 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="file" accept="image/*" data-person="${person}" data-action="upload" style="display:none;">
           </label>
           <button class="btn-outline" style="font-size:0.75rem;padding:0.5rem 0.8rem;" onclick="editProfilePhoto('${person}')">✎ Editar foto actual</button>
+          ${profile.photo ? `<button class="btn-outline" style="font-size:0.75rem;padding:0.5rem 0.8rem;color:var(--crimson-glow);" onclick="deleteProfilePhoto('${person}')">✕ Eliminar foto</button>` : ""}
         </div>` : "";
       card.innerHTML = `<div class="profile-banner-tag ${isEditable ? "" : "readonly"}">${tag}</div><div class="profile-avatar-wrap">${profile.photo ? `<img src="${profile.photo}" alt="${person}">` : `<span class="profile-avatar-placeholder">${person === "Kevin" ? "♚" : "♛"}</span>`}</div><h3 class="profile-name">${person}</h3><p class="profile-role">${role}</p>${photoButtons}<div class="profile-info-list">${pf("Información","info",profile.info,isEditable)}${pf("Obsesión","obsession",profile.obsession,isEditable)}${pf("Ubicación","location",profile.location,isEditable)}${pf("Teléfono","phone",profile.phone,isEditable,"tel")}</div><div class="profile-social-row">${sf("Instagram","instagram",profile.instagram,isEditable)}${sf("TikTok","tiktok",profile.tiktok,isEditable)}</div>`;
       if (isEditable) {
@@ -280,6 +395,15 @@ document.addEventListener("DOMContentLoaded", () => {
     img.onload = () => { photoEdit.img = img; renderEditPreview(); initCropOverlay(); };
     img.src = src;
     document.getElementById("photo-edit-modal").classList.remove("hidden");
+  };
+
+  window.deleteProfilePhoto = function (person) {
+    if (!confirm("¿Eliminar tu foto de perfil?")) return;
+    const profile = getProfile(person);
+    profile.photo = "";
+    saveProfile(person, profile);
+    try { MediaStore.delete(`profile_${person.toLowerCase()}_photo`); } catch(e){}
+    renderProfiles();
   };
   function pf(label, field, value, editable, person, type="text") {
     if (editable) return `<div class="profile-info-row"><span class="profile-info-label">${label}</span><input type="${type}" class="profile-info-value editable-input" data-field="${field}" value="${esc(value)}" placeholder="${label}..."></div>`;
